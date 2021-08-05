@@ -2,10 +2,6 @@
 #include <ncurses.h>
 #include <vector>
 
-/*extern int grid_size_y, grid_size_x, max_y, max_x;
-extern char empty_pixel, unknown_pixel, player_a_pixel, player_b_pixel;
-extern std::vector < std::vector<Pixel> > grid;*/
-
 void render_grid(int start_y, int start_x)
 {
 	move(start_y, 0);
