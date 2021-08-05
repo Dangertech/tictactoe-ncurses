@@ -1,7 +1,8 @@
 #include <ncurses.h>
 #include <vector>
+#include <vars.h>
 
-// Class for each Tile on the grid
+/*// Class for each Tile on the grid
 class Pixel
 {
 	public:
@@ -20,9 +21,11 @@ char empty_pixel = ' ', unknown_pixel = '?', player_a_pixel = 'X', player_b_pixe
 int max_y, max_x;
 
 // Multidimensional Vector that holds each Pixel
-std::vector < std::vector<Pixel> > grid;
+std::vector < std::vector<Pixel> > grid;*/
 
-void render_grid(int start_y, int start_x)
+#include <render.h>
+
+/*void render_grid(int start_y, int start_x)
 {
 	move(start_y, 0);
 	for (int y = 0; y < grid.size(); y++)
@@ -81,7 +84,7 @@ void render_grid(int start_y, int start_x)
 		// Repeat on a new line
 		printw("\n");
 	}
-}
+}*/
 
 int main()
 {
