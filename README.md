@@ -1,2 +1,2 @@
 # tictactoe
-A completely overengineered Tic Tac Toe Clone
+A completely overengineered Tic Tac Toe Game for your Terminal
