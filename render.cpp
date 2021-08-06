@@ -1,7 +1,8 @@
-// Code for rendering the grid
+// File containing functions for all sorts of rendering related things
 #include <ncurses.h>
 #include <vector>
 
+// Function for rendering the grid
 void render_grid(int start_y, int start_x)
 {
 	move(start_y, 0);
@@ -61,4 +62,11 @@ void render_grid(int start_y, int start_x)
 		// Repeat on a new line
 		printw("\n");
 	}
+}
+
+// Function for printing completely centered
+inline void mvcprintw( int pos_y, std::string to_print )
+{
+	int length = to_print.length();
+	mvprintw(pos_y, (max_x / 2) - (length / 2), to_print.c_str());
 }
