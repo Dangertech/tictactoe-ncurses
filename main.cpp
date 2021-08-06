@@ -1,5 +1,6 @@
 #include <ncurses.h>
 #include <menu.h>
+#include <string>
 #include <vector>
 #include <vars.h>
 #include <render.cpp>
@@ -19,7 +20,30 @@ int main()
 	max_x = getmaxx(stdscr);
 	max_y = getmaxy(stdscr);
 	
-	//TODO: Make a 'New game' menu
+	///////////////// Make a 'New game' menu
+	
+	// Create a window that the menu will be displayed on
+	WINDOW *menu;
+	int window_columns = 50;
+	int y_borders = 2; // Space to be left out before the first entry gets rendered
+	int x_origin = (max_x / 2) - ( window_columns / 2);
+	// Names for the options on the left side of the window
+	std::vector <std::string> display_options { "Rows", "Columns", "Pixels needed to win" };
+	menu = newwin( display_options.size() + 4, window_columns, 10, x_origin); 
+	box(menu, 0, 0);
+	while (ch != 10)
+	{
+		// Create a title outside of the window
+		mvcprintw( 3, "TIC TAC TOE");
+		refresh();
+		wrefresh( menu );
+		ch = getch();
+	}
+	delwin( menu );
+	erase();
+
+	
+	///////////////// Set up game
 	
 	// Push all Pixels into the grid vector
 	for (int y = 0; y < grid_size_y; y++)
@@ -40,9 +64,11 @@ int main()
 	grid[0][0].selected = true;
 	render_grid( 1, 2);
 	int y_index = 0, x_index = 0;
-	int ch;
+	// Clear ch before next use;
+	ch = 0;
 	bool is_done = false;
-	// Main game loop starts here, the 1 will probably be replaced with a winning condition
+	 
+	///////////////// Main game loop starts here, the 1 will probably be replaced with a winning condition
 	while (1 || is_done == false /* Selection must pass the check down below*/)
 	{
 		// Clear ch so that ch in't 10 and the while loop gets skipped

@@ -62,3 +62,9 @@ void render_grid(int start_y, int start_x)
 		printw("\n");
 	}
 }
+
+inline void mvcprintw( int pos_y, std::string to_print )
+{
+	int length = to_print.length();
+	mvprintw(pos_y, (max_x / 2) - (length / 2), to_print.c_str());
+}

@@ -22,5 +22,8 @@ char empty_pixel = ' ', unknown_pixel = '?', player_a_pixel = 'X', player_b_pixe
 // Size of the terminal, automatically set in the beginning of main()
 int max_y, max_x;
 
+// Variable to put key codes in
+int ch;
+
 // Multidimensional Vector that holds each Pixel
 std::vector < std::vector<Pixel> > grid;
