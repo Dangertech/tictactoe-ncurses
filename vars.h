@@ -16,7 +16,7 @@ class Pixel
 };
 
 // Size of the grid (Here are fallback values, the actual values should be set by the user later on)
-int grid_size_y = 3, grid_size_x = 3;
+int grid_size_y = 3, grid_size_x = 3, pixels_needed = 3;
 // Characters that render.h uses to render the characters
 char empty_pixel = ' ', unknown_pixel = '?', player_a_pixel = 'X', player_b_pixel = 'O';
 // Size of the terminal, automatically set in the beginning of main()
