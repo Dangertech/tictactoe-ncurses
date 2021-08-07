@@ -1,10 +1,9 @@
 #include <ncurses.h>
-#include <menu.h>
 #include <string>
 #include <vector>
-#include <vars.h>
-#include <render.cpp>
-#include <detect_win.cpp>
+#include "vars.cpp"
+#include "render.cpp"
+#include "detect_win.cpp"
 
 int main()
 {
