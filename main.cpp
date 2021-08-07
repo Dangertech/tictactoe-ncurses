@@ -4,6 +4,7 @@
 #include <vector>
 #include <vars.h>
 #include <render.cpp>
+#include <detect_win.cpp>
 
 int main()
 {
@@ -110,8 +111,8 @@ int main()
 		}
 	}
 	// Debug occupations to test around
-	grid[0][0].value = 1;
-	grid[1][0].value = 2; 
+	//grid[0][0].value = 1;
+	//grid[1][0].value = 2; 
 	// Select the first pixel so that the player can easily see that there is some kind of cursor he can move
 	grid[0][0].selected = true;
 	render_grid( 1, 2);
@@ -174,7 +175,7 @@ int main()
 			render_grid(1, 2);
 		 
 		}
-		// Check if that pixels is unoccupied
+		// Check if that pixel is unoccupied
 		if (grid[y_index][x_index].value == 0)
 		{
 			// Occupy the pixel with player 1's value after the user presses 'Enter'
@@ -187,6 +188,16 @@ int main()
 			is_done = false;
 		}
 		render_grid(1,2);
+
+		////////// Check if a player has won
+		
+		int win = detect_win();
+		if (win == 0)
+			mvprintw(max_y -8, 2, "No player has won");
+		else if (win == -1)
+			mvprintw(max_y -8, 2, "An error occured during the detection of the winning state!");
+		else
+			mvprintw(max_y - 8, 2, "Player %d has won!", win);
 	}
 
 	endwin();
