@@ -1,10 +1,10 @@
-#include <iostream>
 #include <ncurses.h>
 #include <menu.h>
 #include <string>
 #include <vector>
 #include <vars.h>
 #include <render.cpp>
+#include <detect_win.cpp>
 
 int main()
 {
@@ -190,102 +190,14 @@ int main()
 		render_grid(1,2);
 
 		////////// Check if a player has won
-		int x_parse = 0, y_parse = 0;
-		int player_checked;
-		bool has_won = false;
-		while (y_parse < grid_size_y && x_parse < grid_size_x)
-		{
-			///// Get a pixel to start counting from on
-			
-			while (grid[y_parse][x_parse].value == 0)
-			{
-				if (y_parse == grid_size_y -1 && x_parse == grid_size_x -1)
-					break;
-				if (x_parse == grid_size_x-1)
-				{
-					x_parse = 0;
-					y_parse++;
-				}
-				else
-				{
-					x_parse++;
-				}
-			}
-			player_checked = grid[y_parse][x_parse].value;
-			mvprintw(max_y-6, 2, "The first detected pixel is on Y: %d, X: %d, by player %d", y_parse, x_parse, player_checked);
-			refresh();
-			int ref_pixel_y = y_parse, ref_pixel_x = x_parse;
-			has_won = true;
-			 
-			 
-			///// Check for wins vertically
-			
-			for (int i=0; i<pixels_needed; i++)
-			{
-				if (ref_pixel_y <= grid_size_y - pixels_needed)
-				{
-					if (grid[ref_pixel_y + i][ref_pixel_x].value != player_checked)
-					{
-						// If a pixel downwards that is in range of pixels_needed doesn't have the value of the current player, break the statement immediately and set has_won to false
-						has_won = false;
-						break;
-					}
-				}
-				else
-				{
-					has_won = false;
-				}
-				// If the player is just before winning, store the pixel to block for the opponent to use
-				if (i == pixels_needed-1)
-				{
-					int weak_pixel_y = ref_pixel_y + i;
-					int weak_pixel_x = ref_pixel_x;
-				}
-			}
-			// If has_won is still true, player_checked must have won!
-			if (has_won == true)
-				mvprintw(max_y - 12, 2, "Player %d has won! (Vertical)", player_checked);
-			 
-			 
-			///// Check for wins horizontally
-			
-			has_won = true;
-			for (int i=0; i<pixels_needed; i++)
-			{
-				if (ref_pixel_x <= grid_size_x - pixels_needed)
-				{
-					if (grid[ref_pixel_y][ref_pixel_x+i].value != player_checked)
-					{
-						has_won = false;
-						break;
-					}
-				}
-				else
-				{
-					has_won = false;
-				}
-				if (i == pixels_needed-1)
-				{
-					int weak_pixel_y = ref_pixel_y;
-					int weak_pixel_x = ref_pixel_x + i;
-				}
-			}
-			 
-			if (has_won == true)
-				mvprintw(max_y - 11, 2, "Player %d has won! (Horizontal)", player_checked);
-			 
-			if (x_parse >= grid_size_x-1)
-			{
-				x_parse = 0;
-				y_parse++;
-			}
-			else
-			{
-				x_parse++;
-			}
-			mvprintw(max_y - 1, 2, "x_parse: %d, y_parse: %d", x_parse, y_parse);
-			refresh();
-		}
+		
+		int win = detect_win();
+		if (win == 0)
+			mvprintw(max_y -8, 2, "No player has won");
+		else if (win == -1)
+			mvprintw(max_y -8, 2, "An error occured during the detection of the winning state!");
+		else
+			mvprintw(max_y - 8, 2, "Player %d has won!", win);
 	}
 
 	endwin();
