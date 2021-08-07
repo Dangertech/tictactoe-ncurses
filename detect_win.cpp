@@ -3,8 +3,7 @@ int detect_win()
 {
 	int x_parse = 0, y_parse = 0;
 	int player_checked;
-	bool vert_won = false;
-	bool hor_won = false;
+	bool vert_won = false, hor_won = false, dia_won = false;
 	while (y_parse < grid_size_y && x_parse < grid_size_x)
 	{
 		///// Get a pixel to start counting from on
@@ -86,6 +85,29 @@ int detect_win()
 		if (hor_won == true)
 			return player_checked;
 		 
+		 
+		///// Check for wins diagonally
+		 
+		dia_won = true;
+		for (int i=0; i<pixels_needed; i++)
+		{
+			if (ref_pixel_x <= grid_size_x -pixels_needed && ref_pixel_y <= grid_size_y - pixels_needed)
+			{
+				if (grid[ref_pixel_y +i][ref_pixel_x+i].value != player_checked)
+				{
+					dia_won = false;
+					break;
+				}
+			}
+			else
+			{
+				dia_won = false;
+			}
+		}
+		 
+		if (dia_won == true)
+			return player_checked;
+		 
 		if (x_parse >= grid_size_x-1)
 		{
 			x_parse = 0;
@@ -97,7 +119,7 @@ int detect_win()
 		}
 		
 	}
-	if (vert_won == false && hor_won == false)
+	if (vert_won == false && hor_won == false && dia_won == false)
 		return 0;
 	// Error return value so that the compiler doesn't complain
 	return -1;
