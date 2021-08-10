@@ -1,9 +1,9 @@
 #include <ncurses.h>
 #include <string>
 #include <vector>
-#include "vars.cpp"
-#include "render.cpp"
-#include "detect_win.cpp"
+#include "vars.h"
+#include "rendering.h"
+#include "processing.h"
 
 int main()
 {
@@ -22,7 +22,8 @@ int main()
 	max_y = getmaxy(stdscr);
 	
 	
-	///////////////// Make a 'New game' menu
+	start_menu();
+	/*///////////////// Make a 'New game' menu
 	
 	// Create a window that the menu will be displayed on
 	WINDOW *menu;
@@ -93,7 +94,7 @@ int main()
 	// Delete the window and clear the screen
 	delwin( menu );
 	erase();
-	
+	*/
 	
 	///////////////// Set up game
 	
