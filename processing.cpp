@@ -1,3 +1,8 @@
+#include <vector>
+#include <ncurses.h>
+#include "vars.h"
+#include "processing.h"
+
 // Check if a player has won
 int detect_win()
 {
