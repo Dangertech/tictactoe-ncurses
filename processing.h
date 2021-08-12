@@ -2,3 +2,4 @@
 #include <vector>
 
 int detect_win();
+
