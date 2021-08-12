@@ -3,4 +3,3 @@
 
 int detect_win();
 
-void computer_turn();
