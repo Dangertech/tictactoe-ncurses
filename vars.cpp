@@ -18,3 +18,5 @@ int ch;
 int max_y, max_x;
 
 std::vector < std::vector<Pixel> > grid;
+
+int turn = 0;

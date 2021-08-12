@@ -78,9 +78,34 @@ void start_menu()
 	erase();
 }
 
-// Function for rendering the grid
-void render_grid(int start_y, int start_x)
+void render_title(int start_y, int start_x)
 {
+	// Render the title
+	// If we have ASCII art, here will be ASCII art
+	move(start_y, start_x);
+	int middle = ((grid[0].size() * 6) / 2);
+	for (int i = 0; i < grid[0].size(); i++)
+	{
+		printw("======");
+	}
+	std::string title = "TIC TAC TOE";
+	mvprintw(start_y + 1, (middle - (title.length() / 2)) + start_x, "%s\n",title.c_str());
+	move(start_y + 2, start_x);
+	for (int i = 0; i < grid[0].size(); i++)
+	{
+		printw("======");
+	}
+	printw("\n");
+}
+
+
+// Function for rendering the grid
+void render_grid()
+{
+	render_title(1, 2);
+	int start_y = 5, start_x = 2;
+	int y_pos, x_pos;
+	// Render the actual grid
 	move(start_y, 0);
 	for (int y = 0; y < grid.size(); y++)
 	{
@@ -138,6 +163,8 @@ void render_grid(int start_y, int start_x)
 		// Repeat on a new line
 		printw("\n");
 	}
+	getyx(stdscr, y_pos, x_pos);
+	mvprintw(y_pos, start_x + 2, "Turn: %d", turn);
 }
 
 // Function for printing completely centered

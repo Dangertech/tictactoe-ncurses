@@ -3,6 +3,8 @@
 
 void start_menu();
 
-void render_grid(int, int);
+void render_title();
+
+void render_grid();
 
 void mvcprintw( int, std::string);
