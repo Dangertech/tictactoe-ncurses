@@ -46,7 +46,7 @@ int main()
 	//grid[1][0].value = 2; 
 	// Select the first pixel so that the player can easily see that there is some kind of cursor he can move
 	grid[0][0].selected = true;
-	render_grid( 1, 2);
+	render_grid();
 	int y_index = 0, x_index = 0;
 	// Clear ch before next use;
 	ch = 0;
@@ -103,7 +103,7 @@ int main()
 			grid[y_index][x_index].selected = true;
 			grid[y_index][x_index].print_details(max_y-4, 2);
 			// Render it!
-			render_grid(1, 2);
+			render_grid();
 		 
 		}
 		// Check if that pixel is unoccupied
@@ -118,7 +118,7 @@ int main()
 			// The loop continues until the player tries to occupy a valid pixel
 			is_done = false;
 		}
-		render_grid(1,2);
+		render_grid();
 
 		////////// Check if a player has won
 		
@@ -129,6 +129,8 @@ int main()
 			mvprintw(max_y -8, 2, "An error occured during the detection of the winning state!");
 		else
 			mvprintw(max_y - 8, 2, "Player %d has won!", win);
+		turn++;
+		render_grid();
 	}
 
 	endwin();

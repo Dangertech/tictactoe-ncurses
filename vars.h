@@ -23,4 +23,7 @@ class Pixel
 // Multidimensional Vector that holds each Pixel
 extern std::vector < std::vector<Pixel> > grid;
 
+// Turn count
+extern int turn;
+
 extern int ch;
