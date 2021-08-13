@@ -129,3 +129,8 @@ int detect_win()
 	// Error return value so that the compiler doesn't complain
 	return -1;
 }
+
+void computer_turn()
+{
+	
+}

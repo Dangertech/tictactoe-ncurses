@@ -98,6 +98,18 @@ void render_title(int start_y, int start_x)
 	printw("\n");
 }
 
+// Function for drawing a rectangle without requiring to spawn a window
+void make_rectangle(int start_y, int start_x, int end_y, int end_x)
+{
+	mvhline(start_y ,start_x, 0, end_x-start_x);
+	mvhline(end_y, start_x, 0, end_x-start_x);
+	mvvline(start_y, start_x, 0, end_y-start_y);
+	mvvline(start_y, end_x, 0, end_y-start_y);
+	mvaddch(start_y, start_x, ACS_ULCORNER);
+	mvaddch(end_y, start_x, ACS_LLCORNER);
+	mvaddch(start_y, end_x, ACS_URCORNER);
+	mvaddch(end_y, end_x, ACS_LRCORNER);
+}
 
 // Function for rendering the grid
 void render_grid()
@@ -106,11 +118,9 @@ void render_grid()
 	int start_y = 5, start_x = 2;
 	int y_pos, x_pos;
 	// Render the actual grid
-	move(start_y, 0);
 	for (int y = 0; y < grid.size(); y++)
 	{
-		for (int i = 0; i < start_x; i++)
-			printw(" ");
+		move(start_y + y * 2 + 1, start_x + 1); 
 		for (int x = 0; x < grid[0].size(); x++)
 		{
 			printw(" ");
@@ -155,16 +165,18 @@ void render_grid()
 		printw("\n");
 		if (y != grid.size() - 1)
 		{
-			for (int i = 0; i < start_x; i++)
-				printw(" ");
-			for (int x = 0; x < grid[0].size(); x++)
+			getyx(stdscr, y_pos, x_pos);
+			move(y_pos, start_x + 1);
+			for (int x = 0; x < grid[0].size()-1; x++)
 				printw("------");
+			// Print one character less on the last x position
+			printw("-----");
 		}
 		// Repeat on a new line
 		printw("\n");
 	}
-	getyx(stdscr, y_pos, x_pos);
-	mvprintw(y_pos, start_x + 2, "Turn: %d", turn);
+	make_rectangle(start_y, start_x, start_y + grid.size() * 2, start_x + grid[0].size() * 6);
+	mvprintw(start_y + grid.size() * 2, start_x + 2, "Turn: %d", turn);
 }
 
 // Function for printing completely centered

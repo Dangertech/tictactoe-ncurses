@@ -129,6 +129,7 @@ int main()
 			mvprintw(max_y -8, 2, "An error occured during the detection of the winning state!");
 		else
 			mvprintw(max_y - 8, 2, "Player %d has won!", win);
+		computer_turn();
 		turn++;
 		render_grid();
 	}
