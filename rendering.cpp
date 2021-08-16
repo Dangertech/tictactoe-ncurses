@@ -176,7 +176,7 @@ void render_grid()
 		printw("\n");
 	}
 	make_rectangle(start_y, start_x, start_y + grid.size() * 2, start_x + grid[0].size() * 6);
-	mvprintw(start_y + grid.size() * 2, start_x + 2, "Turn: %d", turn);
+	mvprintw(start_y + grid.size() * 2, start_x + 2, "Turn: %d/%d", turn, (grid.size() * grid[0].size())/2);
 }
 
 // Function for printing completely centered
