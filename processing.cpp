@@ -373,7 +373,22 @@ void computer_turn()
 				 
 				// Check according to the operations set
 				if (op_y >= grid_size_y || op_x >= grid_size_x)
+				{
+					// If the opponents pixel line is running towards the end of the grid, block the opposite side
+					if (iter == pixels_needed - 1)
+					{
+						int neg_y = y_parse, neg_x = x_parse;
+						switch (i)
+						{
+							case 0: neg_y--; break;
+							case 1: neg_x--; break;
+							case 2: neg_y--, neg_x--; break;
+							case 3: neg_y--, neg_x++; break;
+						}
+						push_to_weak(neg_y, neg_x);
+					}
 					break;
+				}
 				// If you find a pixel that is unoccupied by Player 1
 				if (grid[op_y][op_x].value != 1)
 				{
