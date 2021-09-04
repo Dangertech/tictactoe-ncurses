@@ -5,14 +5,13 @@
 #include "vars.h"
 #include "processing.h"
 
-int weak_pixel_y, weak_pixel_x;
 // Check if a player has won
 int detect_win()
 {
 	int x_parse = 0, y_parse = 0;
 	int player_checked;
 	bool vert_won = false, hor_won = false, dia_right_won = false, dia_left_won = false;
-	weak_pixel_y = 0, weak_pixel_x = 0;
+	//weak_pixels.clear();
 	// Repeat until the end of the grid is reached
 	while (y_parse < grid_size_y && x_parse < grid_size_x)
 	{
@@ -35,13 +34,14 @@ int detect_win()
 		player_checked = grid[y_parse][x_parse].value;
 		int ref_pixel_y = y_parse, ref_pixel_x = x_parse;
 		 
-		 
 		///// Check for wins vertically
 		
 		// Set vert_won to true and see if it passes all tests and stays true
 		vert_won = true;
 		for (int i=0; i<pixels_needed; i++)
 		{
+			// Variable for weak pixel detection:
+			// Check if the streak can be skipped because it is impossible to win starting here
 			if (ref_pixel_y <= grid_size_y - pixels_needed)
 			{
 				if (grid[ref_pixel_y + i][ref_pixel_x].value != player_checked)
@@ -50,15 +50,11 @@ int detect_win()
 					vert_won = false;
 					break;
 				}
+				 
 			}
 			else
-				vert_won = false;
-			 
-			// If the player is just before winning, store the pixel to block for the opponent to use
-			if (i == pixels_needed-2)
 			{
-				weak_pixel_y = ref_pixel_y + i;
-				weak_pixel_x = ref_pixel_x;
+				vert_won = false;
 			}
 		}
 		// If vert_won is still true, player_checked must have won!
@@ -78,15 +74,10 @@ int detect_win()
 					hor_won = false;
 					break;
 				}
+				 
 			}
 			else
 				hor_won = false;
-			 
-			if (i == pixels_needed-2)
-			{
-				weak_pixel_y = ref_pixel_y;
-				weak_pixel_x = ref_pixel_x + i;
-			}
 		}
 		 
 		if (hor_won == true)
@@ -108,8 +99,7 @@ int detect_win()
 			}
 			else
 				dia_right_won = false;
-			if (i == pixels_needed - 1)
-				weak_pixel_y = ref_pixel_y + 1, weak_pixel_x = ref_pixel_x + 1;
+			 
 		}
 		 
 		if (dia_right_won == true)
@@ -132,13 +122,12 @@ int detect_win()
 			else
 				dia_left_won = false;
 			 
-			if (i == pixels_needed - 1)
-				weak_pixel_y = ref_pixel_y + 1, weak_pixel_x = ref_pixel_x - 1;
 		}
 		 
 		if (dia_left_won == true)
 			return player_checked;
 		 
+		// Increase the parse to not get stuck on the same pixel again
 		if (x_parse >= grid_size_x-1)
 		{
 			x_parse = 0;
@@ -153,7 +142,8 @@ int detect_win()
 
 	// Check if all spaces on the field are full
 	// Just reuse x_ and y_parse
-	x_parse = 0, y_parse = 0;
+	// NOT WORKING AT THE MOMENT, Game just hangs if all fields are full because it tries to calculate an impossible computer turn
+	/*x_parse = 0, y_parse = 0;
 	while (y_parse < grid_size_y)
 	{
 		if (x_parse > grid_size_x-1)
@@ -171,12 +161,15 @@ int detect_win()
 			return -1;
 		if (grid[y_parse][x_parse].value == 0)
 			break;
-	}
+	}*/
+	 
+	// Return 0 if no one has won
 	if (vert_won == false && hor_won == false && dia_right_won == false && dia_left_won == false)
 		return 0;
 	// Error return value so that the compiler doesn't complain
 	return -2;
 }
+
 
 // Variables used by computer_turn()
 int rand_y, rand_x;
@@ -184,6 +177,33 @@ int place_y, place_x;
 int origin_y, origin_x;
 int expansion, prev_expansion;
 
+std::vector< std::vector <int> > weak_pixels;
+
+// Print all entries in weak_pixels below each other
+void print_weak_pixels(int y_pos, int x_pos)
+{
+	// Clear the lines to not show any outdated info
+	for (int i = 0; i<8; i++)
+	{
+		mvprintw(y_pos + i, x_pos, "\n");
+	}
+	for (int i = 0; i < weak_pixels.size(); i++)
+	{
+		mvprintw(y_pos + i, x_pos, "Entry %d: Y: %d, X: %d", i, weak_pixels[i][0], weak_pixels[i][1]);
+	}
+}
+
+// Function to push back X and Y locations to weak_pixels in a single statement
+void push_to_weak(int y_val, int x_val)
+{
+	if (grid[y_val][x_val].value == 0)
+	{
+		weak_pixels.push_back(std::vector<int>());
+		weak_pixels[weak_pixels.size() - 1].push_back(y_val);
+		weak_pixels[weak_pixels.size() - 1].push_back(x_val);
+	}
+}
+ 
 // Get a random spot to start placing pixels
 void get_start_spot()
 {
@@ -221,6 +241,9 @@ void computer_turn()
 		return;
 	}
 	
+	 
+	///// EXPANSION OF A PIXEL LINE
+	 
 	prev_expansion = expansion;
 	expansion = 0;
 	// Check to where the pixel line can be expanded
@@ -307,10 +330,92 @@ void computer_turn()
 			return;
 		}
 	}
+
+	///// TODO: DETECTION OF DANGEROUS (WEAK) PIXELS OF THE OTHER PARTY
+	weak_pixels.clear();
+	int y_parse = 0, x_parse = 0;
+	while (y_parse < grid_size_y && x_parse < grid_size_x)
+	{
+		// Find a pixel to start with
+		while (grid[y_parse][x_parse].value != 1)
+		{
+			if (y_parse == grid_size_y - 1 && x_parse == grid_size_x - 1)
+				break;
+			if (x_parse == grid_size_x - 1)
+			{
+				x_parse = 0;
+				y_parse++;
+			}
+			else
+				x_parse++;
+		}
+		 
+		// Repeat this 4 times for 4 checks
+		for (int i = 0; i < 4; i++)
+		{
+			int iter = 0;
+			while (1)
+			{
+				// Get the check direction to perform in this loop
+				// The switch has to be calculated every while iteration because iter changes each time
+				int op_y, op_x;
+				switch (i)
+				{
+					// Vertical Check
+					case 0: op_y = y_parse + iter, op_x = x_parse; break;
+					// Horizontal Check
+					case 1: op_y = y_parse, op_x = x_parse + iter; break;
+					// Diagonal right
+					case 2: op_y = y_parse + iter, op_x = x_parse + iter; break;
+					// Diagonal left
+					case 3: op_y = y_parse + iter, op_x = x_parse - iter; break;
+				}
+				 
+				// Check according to the operations set
+				if (op_y >= grid_size_y || op_x >= grid_size_x)
+					break;
+				// If you find a pixel that is unoccupied by Player 1
+				if (grid[op_y][op_x].value != 1)
+				{
+					// Check if you already crossed pixels_needed - 1 pixels and if the value of this pixel is empty
+					if (iter == pixels_needed - 1)
+					{
+						// Push the pixel into weak
+						push_to_weak(op_y, op_x);
+						// Also push the pixel at the other side into weak
+						int neg_y = y_parse, neg_x = x_parse;
+						switch (i)
+						{
+							case 0: neg_y--; break;
+							case 1: neg_x--; break;
+							case 2: neg_y--, neg_x--; break;
+							case 3: neg_y--, neg_x++; break;
+						}
+						push_to_weak(neg_y, neg_x);
+					}
+					break;
+				}
+				 
+				// Increase iteration
+				iter++;
+			}
+		}
+		 
+		// Continue parser to not get stuck on the same pixel again
+		if (x_parse >= grid_size_x-1)
+		{
+			x_parse = 0;
+			y_parse++;
+		}
+		else
+		{
+			x_parse++;
+		}
+	}
 	 
-	mvprintw( max_y - 15, 2, "weak_pixel_y: %d, weak_pixel_x: %d", weak_pixel_y, weak_pixel_x);
-	//if (weak_pixel_y == 0 && weak_pixel_x == 0)
-	//{
+	//print_weak_pixels(20,2);
+	if (weak_pixels.size() == 0)
+	{
 		// If you expanded in that direction earlier, continue
 		if (expansion == prev_expansion)
 		{
@@ -371,14 +476,15 @@ void computer_turn()
 					break;
 			}
 		}
-	/*}
+	}
 	else
 	{
 		// Place the pixel on the weak pixel
-		place_y = weak_pixel_y, place_x = weak_pixel_x;
-		weak_pixel_y = 0, weak_pixel_x = 0;
-	}*/
-	mvprintw(max_y - 12, 2, "expansion: %d, prev_expansion: %d, place_y: %d, place_x: %d", expansion, prev_expansion, place_y, place_x); 
+		place_y = weak_pixels[0][0], place_x = weak_pixels[0][1];
+	}
+	 
+	 
+	//mvprintw(max_y - 12, 2, "expansion: %d, prev_expansion: %d, place_y: %d, place_x: %d", expansion, prev_expansion, place_y, place_x); 
 	// Try to continue a pixel line
 	if (place_y < grid.size() && place_x < grid[0].size())
 	{
