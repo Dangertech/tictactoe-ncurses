@@ -55,82 +55,93 @@ int main()
 	 
 	///////////////// Main game loop starts here, the 1 will probably be replaced with a winning condition
 	
-	while (1 || is_done == false /* Selection must pass the check down below*/)
+	while (1)
 	{
-		// Clear ch so that ch in't 10 and the while loop gets skipped
-		ch = 0;
-		 
-		// Player selects Pixel to occupy
-		while (ch != 10)
+		do
 		{
-			// Grab input
-			ch = getch();
-			mvprintw(max_y-3, 2, "%d", ch);
-			// Process arrow key input
-			switch(ch)
-			{
-				case KEY_DOWN: case 'j': case 's':
-					y_index++; break;
-				case KEY_UP: case 'k': case 'w':
-					y_index--; break;
-				case KEY_LEFT: case 'h': case 'a':
-					x_index--; break;
-				case KEY_RIGHT: case 'l': case 'd':
-					x_index++; break;
-			}
-			
-			// Deselect all pixels
-			for (int i = 0; i < grid.size(); i++)
-			{
-				for (int j = 0; j < grid[i].size(); j++)
-				{
-					grid[i][j].selected = false;
-				}
-			}
+			// Clear ch so that ch in't 10 and the while loop gets skipped
+			ch = 0;
 			 
-			// Check if indices should reset to another position because they got out of bounds
-			if (y_index < 0)
-				y_index = 0; 
-			if (y_index > grid.size()-1) 
-				y_index = grid.size() -1; 
-			if (x_index < 0) 
-				x_index = 0;
-			if (x_index > grid[0].size()-1) 
-				x_index = grid[0].size() -1; 
-			  
-			// Select the Pixel with the current index
-			mvprintw(max_y -5, 2, "y_index: %d, x_index: %d, grid.size(): %d, grid[0].size: %d", y_index, x_index, grid.size(), grid[0].size());
-			grid[y_index][x_index].selected = true;
-			grid[y_index][x_index].print_details(max_y-4, 2);
-			// Render it!
+			// Player selects Pixel to occupy
+			while (ch != 10)
+			{
+				// Grab input
+				ch = getch();
+				mvprintw(max_y-3, 2, "%d", ch);
+				// Process arrow key input
+				switch(ch)
+				{
+					case KEY_DOWN: case 'j': case 's':
+						y_index++; break;
+					case KEY_UP: case 'k': case 'w':
+						y_index--; break;
+					case KEY_LEFT: case 'h': case 'a':
+						x_index--; break;
+					case KEY_RIGHT: case 'l': case 'd':
+						x_index++; break;
+				}
+				
+				// Deselect all pixels
+				for (int i = 0; i < grid.size(); i++)
+				{
+					for (int j = 0; j < grid[i].size(); j++)
+					{
+						grid[i][j].selected = false;
+					}
+				}
+				 
+				// Check if indices should reset to another position because they got out of bounds
+				if (y_index < 0)
+					y_index = 0; 
+				if (y_index > grid.size()-1) 
+					y_index = grid.size() -1; 
+				if (x_index < 0) 
+					x_index = 0;
+				if (x_index > grid[0].size()-1) 
+					x_index = grid[0].size() -1; 
+				  
+				// Select the Pixel with the current index
+				mvprintw(max_y -5, 2, "y_index: %d, x_index: %d, grid.size(): %d, grid[0].size: %d", y_index, x_index, grid.size(), grid[0].size());
+				grid[y_index][x_index].selected = true;
+				grid[y_index][x_index].print_details(max_y-4, 2);
+				// Render it!
+				render_grid();
+			 
+			}
+			// Check if that pixel is unoccupied
+			if (grid[y_index][x_index].value == 0)
+			{
+				// Occupy the pixel with player 1's value after the user presses 'Enter'
+				grid[y_index][x_index].value = 1;
+				is_done = true;
+			}
+			else
+			{
+				// The loop continues until the player tries to occupy a valid pixel
+				is_done = false;
+			}
 			render_grid();
-		 
-		}
-		// Check if that pixel is unoccupied
-		if (grid[y_index][x_index].value == 0)
-		{
-			// Occupy the pixel with player 1's value after the user presses 'Enter'
-			grid[y_index][x_index].value = 1;
-			is_done = true;
-		}
-		else
-		{
-			// The loop continues until the player tries to occupy a valid pixel
-			is_done = false;
-		}
-		render_grid();
+		} while (is_done == false);
 
 		////////// Check if a player has won
 		
 		int win = detect_win();
 		if (win == 0)
+		{
 			mvprintw(max_y -8, 2, "No player has won");
+			computer_turn();
+			win = detect_win();
+			if (win == 2)
+				mvprintw(max_y - 8, 2, "The computer has won!");
+			else if (win == -1)
+				mvprintw(max_y - 8, 2, "The field is full! The game has finished with a tie!");
+			turn++;
+		}
 		else if (win == -1)
-			mvprintw(max_y -8, 2, "An error occured during the detection of the winning state!");
+			mvprintw(max_y -8, 2, "The field is full! The game has finished with a tie!");
 		else
 			mvprintw(max_y - 8, 2, "Player %d has won!", win);
-		computer_turn();
-		turn++;
+		 
 		render_grid();
 	}
 
