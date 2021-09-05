@@ -12,16 +12,24 @@ extern int grid_size_y, grid_size_x, pixels_needed;
 // Class for each Tile on the grid
 class Pixel
 {
-	public:
+	private:
 		int value;
 		int selected;
 		int pos_y, pos_x;
+	public:
+		void set_value(int);
+		int get_value();
+		void set_selected(bool);
+		int get_selected();
 		// DEBUG Print the details of a pixel
 		void print_details(int,int);
 };
 
 // Multidimensional Vector that holds each Pixel
 extern std::vector < std::vector<Pixel> > grid;
+
+int get_grid_val(int, int);
+void set_grid_val(int, int, int);
 
 // Turn count
 extern int turn;
