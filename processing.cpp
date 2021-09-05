@@ -17,7 +17,7 @@ int detect_win()
 	{
 		///// Get a pixel to start counting from on
 		
-		while (grid[y_parse][x_parse].value == 0)
+		while (get_grid_val(y_parse, x_parse) == 0)
 		{
 			if (y_parse == grid_size_y -1 && x_parse == grid_size_x -1)
 				break;
@@ -31,7 +31,7 @@ int detect_win()
 				x_parse++;
 			}
 		}
-		player_checked = grid[y_parse][x_parse].value;
+		player_checked = get_grid_val(y_parse, x_parse);
 		int ref_pixel_y = y_parse, ref_pixel_x = x_parse;
 		 
 		///// Check for wins vertically
@@ -44,7 +44,7 @@ int detect_win()
 			// Check if the streak can be skipped because it is impossible to win starting here
 			if (ref_pixel_y <= grid_size_y - pixels_needed)
 			{
-				if (grid[ref_pixel_y + i][ref_pixel_x].value != player_checked)
+				if (get_grid_val(ref_pixel_y + i, ref_pixel_x) != player_checked)
 				{
 					// If a pixel downwards that is in range of pixels_needed doesn't have the value of the current player, break the statement immediately and set vert_won to false
 					vert_won = false;
@@ -69,7 +69,7 @@ int detect_win()
 		{
 			if (ref_pixel_x <= grid_size_x - pixels_needed)
 			{
-				if (grid[ref_pixel_y][ref_pixel_x+i].value != player_checked)
+				if (get_grid_val(ref_pixel_y, ref_pixel_x+i) != player_checked)
 				{
 					hor_won = false;
 					break;
@@ -91,7 +91,7 @@ int detect_win()
 		{
 			if (ref_pixel_x <= grid_size_x - pixels_needed && ref_pixel_y <= grid_size_y - pixels_needed)
 			{
-				if (grid[ref_pixel_y +i][ref_pixel_x+i].value != player_checked)
+				if (get_grid_val(ref_pixel_y+i, ref_pixel_x+i) != player_checked)
 				{
 					dia_right_won = false;
 					break;
@@ -113,7 +113,7 @@ int detect_win()
 		{
 			if (ref_pixel_x <= grid_size_x + pixels_needed && ref_pixel_y <= grid_size_y - pixels_needed)
 			{
-				if (grid[ref_pixel_y + i][ref_pixel_x - i].value != player_checked)
+				if (get_grid_val(ref_pixel_y+i, ref_pixel_x-i) != player_checked)
 				{
 					dia_left_won = false;
 					break;
@@ -159,7 +159,7 @@ int detect_win()
 		// While would stop in the next operation
 		if (y_parse == grid_size_y -1)
 			return -1;
-		if (grid[y_parse][x_parse].value == 0)
+		if (get_grid_val(y_parse, x_parse) == 0)
 			break;
 	}*/
 	 
@@ -196,7 +196,7 @@ void print_weak_pixels(int y_pos, int x_pos)
 // Function to push back X and Y locations to weak_pixels in a single statement
 void push_to_weak(int y_val, int x_val)
 {
-	if (grid[y_val][x_val].value == 0)
+	if (get_grid_val(y_val, x_val) == 0)
 	{
 		weak_pixels.push_back(std::vector<int>());
 		weak_pixels[weak_pixels.size() - 1].push_back(y_val);
@@ -224,11 +224,12 @@ void get_start_spot()
 		else
 			rand_x = rand() % (grid[0].size());
 	}
-	while(grid[rand_y][rand_x].value != 0);
+	while(get_grid_val(rand_y, rand_x) != 0);
+	 
 	place_y = rand_y, place_x = rand_x;
 	origin_y = rand_y, origin_x = rand_x;
 	// Place the pixel
-	grid[place_y][place_x].value = 2;
+	set_grid_val(place_y, place_x, 2);
 }
 
 void computer_turn()
@@ -263,7 +264,7 @@ void computer_turn()
 			if (parse_y < grid.size() && parse_x < grid[0].size())
 			{
 				// If a pixel is occupied by the enemy player, move on
-				if (grid[parse_y][parse_x].value == 1)
+				if (get_grid_val(parse_y, parse_x) == 1)
 				{
 					move_on = true;
 				}
@@ -331,13 +332,13 @@ void computer_turn()
 		}
 	}
 
-	///// TODO: DETECTION OF DANGEROUS (WEAK) PIXELS OF THE OTHER PARTY
+	///// DETECTION OF DANGEROUS (WEAK) PIXELS OF THE OTHER PARTY
 	weak_pixels.clear();
 	int y_parse = 0, x_parse = 0;
 	while (y_parse < grid_size_y && x_parse < grid_size_x)
 	{
 		// Find a pixel to start with
-		while (grid[y_parse][x_parse].value != 1)
+		while (get_grid_val(y_parse, x_parse) != 1)
 		{
 			if (y_parse == grid_size_y - 1 && x_parse == grid_size_x - 1)
 				break;
@@ -390,7 +391,7 @@ void computer_turn()
 					break;
 				}
 				// If you find a pixel that is unoccupied by Player 1
-				if (grid[op_y][op_x].value != 1)
+				if (get_grid_val(op_y, op_x) != 1)
 				{
 					// Check if you already crossed pixels_needed - 1 pixels and if the value of this pixel is empty
 					if (iter == pixels_needed - 1)
@@ -503,14 +504,10 @@ void computer_turn()
 	// Try to continue a pixel line
 	if (place_y < grid.size() && place_x < grid[0].size())
 	{
-		if (grid[place_y][place_x].value == 0)
-		{
-			grid[place_y][place_x].value = 2;
-		}
+		if (get_grid_val(place_y, place_x) == 0)
+			set_grid_val(place_y, place_x, 2);
 		else
-		{
 			get_start_spot();
-		}
 	}
 	else
 		get_start_spot();

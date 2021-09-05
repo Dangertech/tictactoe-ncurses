@@ -125,13 +125,13 @@ void render_grid()
 		{
 			printw(" ");
 			// Render selected pixel on the left
-			if (grid[y][x].selected == true)
+			if (get_grid_sel(y, x) == true)
 				printw(">");
 			else
 				printw(" ");
 			// Render pixel value
 			char this_pixel;
-			switch (grid[y][x].value)
+			switch (get_grid_val(y, x))
 			{
 				case 0:
 					this_pixel = empty_pixel;
@@ -151,7 +151,7 @@ void render_grid()
 			attroff(COLOR_PAIR(1));
 			attroff(COLOR_PAIR(2));
 			// Render selected pixel on the right
-			if (grid[y][x].selected == true)
+			if (get_grid_sel(y, x) == true)
 				printw("<");
 			else
 				printw(" ");

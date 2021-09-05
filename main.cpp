@@ -42,10 +42,10 @@ int main()
 		}
 	}
 	// Debug occupations to test around
-	//grid[0][0].value = 1;
-	//grid[1][0].value = 2; 
+	//set_grid_val(0, 0, 1);
+	//set_grid_val(0, 1, 2); 
 	// Select the first pixel so that the player can easily see that there is some kind of cursor he can move
-	grid[0][0].selected = true;
+	set_grid_sel(0, 0, true);
 	render_grid();
 	int y_index = 0, x_index = 0;
 	// Clear ch before next use;
@@ -86,7 +86,7 @@ int main()
 				{
 					for (int j = 0; j < grid[i].size(); j++)
 					{
-						grid[i][j].selected = false;
+						set_grid_sel(i, j, false);
 					}
 				}
 				 
@@ -100,19 +100,20 @@ int main()
 				if (x_index > grid[0].size()-1) 
 					x_index = grid[0].size() -1; 
 				  
-				// Select the Pixel with the current index
 				mvprintw(max_y -5, 2, "y_index: %d, x_index: %d, grid.size(): %d, grid[0].size: %d", y_index, x_index, grid.size(), grid[0].size());
-				grid[y_index][x_index].selected = true;
+				// Select the Pixel with the current index
+				set_grid_sel(y_index, x_index, true);
+				// Print the details of the currently selected pixel
 				grid[y_index][x_index].print_details(max_y-4, 2);
 				// Render it!
 				render_grid();
 			 
 			}
 			// Check if that pixel is unoccupied
-			if (grid[y_index][x_index].value == 0)
+			if (get_grid_val(y_index, x_index) == 0)
 			{
 				// Occupy the pixel with player 1's value after the user presses 'Enter'
-				grid[y_index][x_index].value = 1;
+				set_grid_val(y_index, x_index, 1);
 				is_done = true;
 			}
 			else
