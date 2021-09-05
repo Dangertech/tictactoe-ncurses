@@ -43,18 +43,18 @@ std::vector < std::vector<Pixel> > grid;
 
 int get_grid_val(int pos_y, int pos_x)
 {
-	if (pos_y < grid_size_y && pos_x < grid_size_x)
+	if (pos_y < grid_size_y && pos_x < grid_size_x && pos_y >= 0 && pos_x >= 0)
 		return grid[pos_y][pos_x].get_value();
 	else
 	{
 		mvprintw( max_y - 9, 2, "ERROR! Tried to get value of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
-		return -1;
+		return 0;
 	}
 }
 
 void set_grid_val(int pos_y, int pos_x, int val)
 {
-	if (pos_y < grid_size_y && pos_x < grid_size_x)
+	if (pos_y < grid_size_y && pos_x < grid_size_x && pos_y >= 0 && pos_x >= 0)
 	{
 		grid[pos_y][pos_x].set_value(val);
 	}
@@ -64,18 +64,18 @@ void set_grid_val(int pos_y, int pos_x, int val)
 
 int get_grid_sel(int pos_y, int pos_x)
 {
-	if (pos_y < grid_size_y && pos_x < grid_size_x)
+	if (pos_y < grid_size_y && pos_x < grid_size_x && pos_y >= 0 && pos_x >= 0)
 		return grid[pos_y][pos_x].get_selected();
 	else
 	{
 		mvprintw( max_y - 11, 2, "ERROR! Tried to get selected of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
-		return -1;
+		return 0;
 	}
 }
  
 void set_grid_sel(int pos_y, int pos_x, bool selected)
 {
-	if (pos_y < grid_size_y && pos_x < grid_size_x)
+	if (pos_y < grid_size_y && pos_x < grid_size_x && pos_y >= 0 && pos_x >= 0)
 		grid[pos_y][pos_x].set_selected(selected);
 	else
 		mvprintw( max_y - 12, 2, "ERROR! Tried to set selected of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
