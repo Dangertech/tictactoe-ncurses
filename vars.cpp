@@ -10,22 +10,22 @@ void Pixel::print_details(int row, int col)
 
 void Pixel::set_value(int value)
 {
-	Pixel.value = value;
+	value = value;
 }
 
 int Pixel::get_value()
 {
-	return Pixel.value;
+	return value;
 }
 
 void Pixel::set_selected(bool selected)
 {
-	Pixel.selected = selected;
+	selected = selected;
 }
 
 bool Pixel::get_selected()
 {
-	return Pixel.selected;
+	return selected;
 }
 
 // Size of the grid (Here are default values that can be changed in the start menu)
@@ -41,16 +41,6 @@ std::vector < std::vector<Pixel> > grid;
 
 // Function to get and set Pixel properties safely by avoiding out of bound access
 
-void set_grid_val(int pos_y, int pos_x, int val)
-{
-	if (pos_y < grid_size_y && pos_x < grid_size_x)
-	{
-		grid[pos_y][pos_x].set_value(val);
-	}
-	else
-		mvprintw( max_y - 10, 2, "ERROR! Tried to set value of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
-}
- 
 int get_grid_val(int pos_y, int pos_x)
 {
 	if (pos_y < grid_size_y && pos_x < grid_size_x)
@@ -60,6 +50,35 @@ int get_grid_val(int pos_y, int pos_x)
 		mvprintw( max_y - 9, 2, "ERROR! Tried to get value of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
 		return -1;
 	}
+}
+
+void set_grid_val(int pos_y, int pos_x, int val)
+{
+	if (pos_y < grid_size_y && pos_x < grid_size_x)
+	{
+		grid[pos_y][pos_x].set_value(val);
+	}
+	else
+		mvprintw( max_y - 10, 2, "ERROR! Tried to set value of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
+}
+
+int get_grid_sel(int pos_y, int pos_x)
+{
+	if (pos_y < grid_size_y && pos_x < grid_size_x)
+		return grid[pos_y][pos_x].get_selected();
+	else
+	{
+		mvprintw( max_y - 11, 2, "ERROR! Tried to get selected of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
+		return -1;
+	}
+}
+ 
+void set_grid_sel(int pos_y, int pos_x, bool selected)
+{
+	if (pos_y < grid_size_y && pos_x < grid_size_x)
+		grid[pos_y][pos_x].set_selected(selected);
+	else
+		mvprintw( max_y - 12, 2, "ERROR! Tried to set selected of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
 }
 
 int turn = 0;
