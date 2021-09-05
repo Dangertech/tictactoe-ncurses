@@ -42,8 +42,8 @@ int main()
 		}
 	}
 	// Debug occupations to test around
-	set_grid_val(0, 0, 1);
-	set_grid_val(0, 1, 2); 
+	//set_grid_val(0, 0, 1);
+	//set_grid_val(0, 1, 2); 
 	// Select the first pixel so that the player can easily see that there is some kind of cursor he can move
 	set_grid_sel(0, 0, true);
 	render_grid();

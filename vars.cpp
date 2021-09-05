@@ -8,9 +8,9 @@ void Pixel::print_details(int row, int col)
 	mvprintw(row, col, "Value: %d, Selected: %d, Pos_y: %d, Pos_x: %d", value, selected, pos_y, pos_x);
 }
 
-void Pixel::set_value(int value)
+void Pixel::set_value(int my_value)
 {
-	value = value;
+	value = my_value;
 }
 
 int Pixel::get_value()
@@ -18,9 +18,9 @@ int Pixel::get_value()
 	return value;
 }
 
-void Pixel::set_selected(bool selected)
+void Pixel::set_selected(bool my_selected)
 {
-	selected = selected;
+	selected = my_selected;
 }
 
 bool Pixel::get_selected()
