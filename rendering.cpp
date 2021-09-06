@@ -9,6 +9,7 @@ void start_menu()
 {
 	// Create a window that the menu will be displayed on
 	WINDOW *menu_win;
+	// Create a struct that holds option properties
 	struct menu_options
 	{
 		std::string description;
@@ -17,7 +18,7 @@ void start_menu()
 	};
 	 
 	// Construct a vector with the options
-	std::vector <menu_options> start_menu = { {"Rows", grid_size_y, false}, { "Columns", grid_size_x, false}, {"Piexls needed to win", pixels_needed, false} };
+	std::vector <menu_options> start_menu = { {"Rows", grid_size_y, false}, { "Columns", grid_size_x, false}, {"Pixels needed to win", pixels_needed, false} };
 	
 	int window_rows = start_menu.size() + 4, window_columns = 50;
 	int y_borders = 2; // Space to be left out before the first entry gets rendered
@@ -45,19 +46,20 @@ void start_menu()
 				break;
 		}
 		 
-		// Create a title and some decorations outside of the window
-		mvprintw( max_y - 5, 2, "%d", selected_entry);
-		mvcprintw( 3, "TIC TAC TOE");
-		mvprintw( y_origin-1, x_origin, "Starting a new game:");
-		mvprintw( y_origin + window_rows, x_origin, "Press 'Enter' to confirm your choices!");
+
 		 
+		 
+		///// ERROR HANDLING
 		 
 		// Make a vector that holds possible error messages
 		std::vector <std::string> error_msgs;
 		error_msgs.clear();
 		// Push errors back into the error vector
+		// 
+		// Rows and columns
 		for (int i = 0; i < 2; i++)
 		{
+			  
 			int val = start_menu[i].display_value;
 			// I know, this is pretty bad code but it's just a little easter egg
 			if (val < 2)
@@ -84,11 +86,32 @@ void start_menu()
 				error_msgs.push_back("I really don't have time for this.");
 			else if (val > 1845)
 				error_msgs.push_back("Don't you have hobbies or something!?");
-
 			// Turn error to true in all cases from above
 			if (val < 2 || val > 30)
 				start_menu[i].error = true;
 		} 
+		 
+		// pixels_needed
+		int dis_pix = start_menu[2].display_value;
+		if (dis_pix > start_menu[0].display_value && dis_pix > start_menu[1].display_value)
+		{
+			error_msgs.push_back("A player needs more pixels in a row to win than there are rows and columns.");
+			error_msgs.push_back("It is impossible to win.");
+			start_menu[2].error = true;
+		}
+		else if (dis_pix > start_menu[0].display_value || dis_pix > start_menu[1].display_value)
+		{
+			error_msgs.push_back("The grid size is not large enough in one direction to win.");
+			error_msgs.push_back("A game might be harder to win.");
+			start_menu[2].error = true;
+		}
+		 
+		if (dis_pix < 2)
+		{
+			error_msgs.push_back("Pixel streaks lower than 2 may produce unexpected behaviour!");
+			start_menu[2].error = true;
+		}
+		 
 		// Print error messages
 		erase();
 		attron( COLOR_PAIR(2) );
@@ -99,11 +122,23 @@ void start_menu()
 		attroff( COLOR_PAIR(2) );
 		 
 		 
+		 
+		///// MENU RENDERING
+		 
 		// Erase the entire window in case there was a menu entry with a higher digit count before than the one now
-		// For example: A value was 10, now the user presses KEY_LEFT, but the menu shows 90 although it is nine, because the location of the '0' wasn't redrawn
+		// For example: A value was 10, now the user presses KEY_LEFT, 
+		// but the menu shows 90 although it is nine, because the location of the '0' wasn't redrawn
 		werase( menu_win );
 		// Print a box around the menu window
 		box(menu_win, 1, 0);
+		 
+		// Create a title and some decorations outside of the window
+		mvprintw( max_y - 5, 2, "%d", selected_entry);
+		mvcprintw( 3, "TIC TAC TOE");
+		mvprintw( y_origin-1, x_origin, "Starting a new game:");
+		mvwprintw(menu_win, window_rows - 1, window_columns - 10, "<Enter>");
+		 
+		// Render window contents
 		for (int i = 0; i < start_menu.size(); i++)
 		{
 			if (selected_entry == i)
@@ -115,13 +150,21 @@ void start_menu()
 					digit_size = 3;
 				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 10, "<");
 				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 7 + digit_size, ">");
-				if (start_menu[i].error == true)
-					wattron( menu_win, COLOR_PAIR(66) );
-				else
-					wattron( menu_win, A_STANDOUT );
+				// Activate the standout color pair
+				wattron( menu_win, A_STANDOUT );
 			}
+			 
+			// If the current entry is reported erroneous,
+			// turn off the standout pair and activate the error color pair
+			if (start_menu[i].error == true)
+			{
+				wattroff( menu_win, A_STANDOUT );
+				wattron( menu_win, COLOR_PAIR(66) );
+			}
+			 
 			mvwprintw( menu_win, i + y_borders, 2, start_menu[i].description.c_str() );
 			mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 8, "%d", start_menu[i].display_value );
+			// Turn the possible color pairs off
 			wattroff( menu_win, A_STANDOUT );
 			wattroff( menu_win, COLOR_PAIR(66) );
 			// Reset error value to check if it is still true on the next while iteration
