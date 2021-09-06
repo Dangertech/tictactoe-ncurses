@@ -8,21 +8,22 @@
 void start_menu() 
 {
 	// Create a window that the menu will be displayed on
-	WINDOW *menu;
+	WINDOW *menu_win;
 	struct menu_options
 	{
 		std::string description;
 		int display_value;
+		bool error;
 	};
 	 
 	// Construct a vector with the options
-	std::vector <menu_options> start_menu = { {"Rows", grid_size_y}, { "Columns", grid_size_x}, {"Piexls needed to win", pixels_needed} };
+	std::vector <menu_options> start_menu = { {"Rows", grid_size_y, false}, { "Columns", grid_size_x, false}, {"Piexls needed to win", pixels_needed, false} };
 	
 	int window_rows = start_menu.size() + 4, window_columns = 50;
 	int y_borders = 2; // Space to be left out before the first entry gets rendered
 	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = 10;
 	int selected_entry = 0;
-	menu = newwin( window_rows, window_columns, y_origin, x_origin); 
+	menu_win = newwin( window_rows, window_columns, y_origin, x_origin); 
 	//Draw everything until the user confirms with 'Enter'
 	while (ch != 10)
 	{
@@ -51,7 +52,7 @@ void start_menu()
 		mvprintw( y_origin + window_rows, x_origin, "Press 'Enter' to confirm your choices!");
 		 
 		 
-		// Make a vector that holds possible error message
+		// Make a vector that holds possible error messages
 		std::vector <std::string> error_msgs;
 		error_msgs.clear();
 		// Push errors back into the error vector
@@ -78,11 +79,15 @@ void start_menu()
 			else if (val > 828 && val < 1021)
 				error_msgs.push_back("This is getting ridiculous.");
 			else if (val > 1021 && val < 1372)
-				error_msgs.push_back("You might run into some performance issues now, btw");
+				error_msgs.push_back("You may run into some performance issues now, btw");
 			else if (val > 1372 && val < 1845)
 				error_msgs.push_back("I really don't have time for this.");
 			else if (val > 1845)
 				error_msgs.push_back("Don't you have hobbies or something!?");
+
+			// Turn error to true in all cases from above
+			if (val < 2 || val > 30)
+				start_menu[i].error = true;
 		} 
 		// Print error messages
 		erase();
@@ -96,23 +101,34 @@ void start_menu()
 		 
 		// Erase the entire window in case there was a menu entry with a higher digit count before than the one now
 		// For example: A value was 10, now the user presses KEY_LEFT, but the menu shows 90 although it is nine, because the location of the '0' wasn't redrawn
-		werase( menu );
-		// Print a box around the menu
-		box(menu, 1, 0);
+		werase( menu_win );
+		// Print a box around the menu window
+		box(menu_win, 1, 0);
 		for (int i = 0; i < start_menu.size(); i++)
 		{
 			if (selected_entry == i)
 			{
-				mvwprintw( menu, i + y_borders, getmaxx(menu)-10, "<");
-				mvwprintw( menu, i + y_borders, getmaxx(menu)-6, ">");
-				wattron( menu, A_STANDOUT );
+				int digit_size = 1;
+				if (start_menu[i].display_value > 9 || start_menu[i].display_value < 0)
+					digit_size = 2;
+				if (start_menu[i].display_value > 100 || start_menu[i].display_value < -9)
+					digit_size = 3;
+				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 10, "<");
+				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 7 + digit_size, ">");
+				if (start_menu[i].error == true)
+					wattron( menu_win, COLOR_PAIR(66) );
+				else
+					wattron( menu_win, A_STANDOUT );
 			}
-			mvwprintw( menu, i + y_borders, 2, start_menu[i].description.c_str() );
-			mvwprintw( menu, i + y_borders, getmaxx(menu) - 8, "%d", start_menu[i].display_value );
-			wattroff( menu, A_STANDOUT );
+			mvwprintw( menu_win, i + y_borders, 2, start_menu[i].description.c_str() );
+			mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 8, "%d", start_menu[i].display_value );
+			wattroff( menu_win, A_STANDOUT );
+			wattroff( menu_win, COLOR_PAIR(66) );
+			// Reset error value to check if it is still true on the next while iteration
+			start_menu[i].error = false;
 		}
 		refresh();
-		wrefresh( menu );
+		wrefresh( menu_win );
 		ch = getch();
 	}
 	// OK, this looks very ugly, but I couldn't find a better solution:
@@ -121,7 +137,7 @@ void start_menu()
 	grid_size_x = start_menu[1].display_value;
 	pixels_needed = start_menu[2].display_value;
 	// Delete the window and clear the screen
-	delwin( menu );
+	delwin( menu_win );
 	erase();
 }
 
