@@ -13,12 +13,23 @@ void start_menu()
 	struct menu_options
 	{
 		std::string description;
+		// Int if the option should have a value
 		int display_value;
+		// Text if the option should have different strings of text
+		std::vector < std::string > display_text;
+		int text_loc; // Pointer to the current entry to be displayed
 		bool error;
 	};
 	 
 	// Construct a vector with the options
-	std::vector <menu_options> start_menu = { {"Rows", grid_size_y, false}, { "Columns", grid_size_x, false}, {"Pixels needed to win", pixels_needed, false} };
+	std::vector <menu_options> start_menu = 
+	{ 
+		{"Rows", grid_size_y,{}, 0, false}, 
+		{"Columns", grid_size_x, {}, 0,  false}, 
+		{"Pixels needed to win", pixels_needed, {}, 0, false}, 
+		{"Player 1's Color:", 0, {"Green", "Red", "Blue", "Yellow"}, player_one_color - 1, false }, 
+		{"Player 2's Color:", 0, {"Green", "Red", "Blue", "Yellow"}, player_two_color - 1, false }
+	};
 	
 	int window_rows = start_menu.size() + 4, window_columns = 50;
 	int y_borders = 2; // Space to be left out before the first entry gets rendered
@@ -39,14 +50,31 @@ void start_menu()
 					selected_entry++;
 				break;
 			case KEY_LEFT:
-				start_menu[selected_entry].display_value--;
+				// If there is no text to be displayed, decrease the value of the int
+				if (start_menu[selected_entry].display_text.size() == 0)
+					start_menu[selected_entry].display_value--;
+				// else, decrease the pointer to the current text entry
+				else
+				{
+					start_menu[selected_entry].text_loc--;
+					// Wrap around
+					if (start_menu[selected_entry].text_loc < 0)
+						start_menu[selected_entry].text_loc = start_menu[selected_entry].display_text.size() - 1;
+				}
 				break;
 			case KEY_RIGHT:
-				start_menu[selected_entry].display_value++;
+				if (start_menu[selected_entry].display_text.size() == 0)
+					start_menu[selected_entry].display_value++;
+				else
+				{
+					start_menu[selected_entry].text_loc++;
+					if (start_menu[selected_entry].text_loc == start_menu[selected_entry].display_text.size())
+						start_menu[selected_entry].text_loc = 0;
+				}
 				break;
 		}
 		 
-
+		 
 		 
 		 
 		///// ERROR HANDLING
@@ -143,11 +171,21 @@ void start_menu()
 		{
 			if (selected_entry == i)
 			{
+				// Render the input indicator 
+				// 
 				int digit_size = 1;
-				if (start_menu[i].display_value > 9 || start_menu[i].display_value < 0)
-					digit_size = 2;
-				if (start_menu[i].display_value > 100 || start_menu[i].display_value < -9)
-					digit_size = 3;
+				// If the display_text vector is empty, and the number should be shown
+				if (start_menu[i].display_text.size() == 0)
+				{
+					if (start_menu[i].display_value > 9 || start_menu[i].display_value < 0)
+						digit_size = 2;
+					if (start_menu[i].display_value > 100 || start_menu[i].display_value < -9)
+						digit_size = 3;
+				}
+				else
+				{
+					digit_size = start_menu[i].display_text[start_menu[i].text_loc].length();
+				}
 				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 10, "<");
 				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 7 + digit_size, ">");
 				// Activate the standout color pair
@@ -163,7 +201,11 @@ void start_menu()
 			}
 			 
 			mvwprintw( menu_win, i + y_borders, 2, start_menu[i].description.c_str() );
-			mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 8, "%d", start_menu[i].display_value );
+			// If the size of the text vector is empty, show the integer
+			if (start_menu[i].display_text.size() == 0)
+				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 8, "%d", start_menu[i].display_value );
+			else
+				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 8, start_menu[i].display_text[start_menu[i].text_loc].c_str() );
 			// Turn the possible color pairs off
 			wattroff( menu_win, A_STANDOUT );
 			wattroff( menu_win, COLOR_PAIR(66) );
@@ -179,6 +221,8 @@ void start_menu()
 	grid_size_y = start_menu[0].display_value;
 	grid_size_x = start_menu[1].display_value;
 	pixels_needed = start_menu[2].display_value;
+	player_one_color = start_menu[3].text_loc + 1;
+	player_two_color = start_menu[4].text_loc + 1;
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
@@ -243,19 +287,19 @@ void render_grid()
 					this_pixel = empty_pixel;
 					break;
 				case 1:
-					attron(COLOR_PAIR(1));
-					this_pixel = player_a_pixel;
+					attron(COLOR_PAIR(player_one_color));
+					this_pixel = player_one_pixel;
 					break;
 				case 2:
-					attron(COLOR_PAIR(2));
-					this_pixel = player_b_pixel;
+					attron(COLOR_PAIR(player_two_color));
+					this_pixel = player_two_pixel;
 					break;
 				default:
 					this_pixel = unknown_pixel;
 			}
 			printw("%c", this_pixel);
-			attroff(COLOR_PAIR(1));
-			attroff(COLOR_PAIR(2));
+			attroff(COLOR_PAIR(player_one_color));
+			attroff(COLOR_PAIR(player_two_color));
 			// Render selected pixel on the right
 			if (get_grid_sel(y, x) == true)
 				printw("<");

@@ -18,6 +18,8 @@ int main()
 	// Initialize Color pairs
 	init_pair(1, COLOR_GREEN, COLOR_BLACK);
 	init_pair(2, COLOR_RED, COLOR_BLACK);
+	init_pair(3, COLOR_BLUE, COLOR_BLACK);
+	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
 	// Error color pair
 	init_pair(66, COLOR_WHITE, COLOR_RED);
 	 
