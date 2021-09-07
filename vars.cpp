@@ -2,6 +2,17 @@
 #include "vars.h"
 // Pack all important variables into a file to make them accessible
 
+// Characters that render.h uses to render the characters
+// Although the values here might seem to affect the entry that start_menu starts with, they are just fallback values
+char empty_pixel = ' ', unknown_pixel = '?', player_one_pixel = 'X', player_two_pixel = 'O';
+int player_one_color = 1, player_two_color = 2;
+
+int max_y, max_x;
+
+// Size of the grid (Here are default values that can be changed in the start menu)
+int grid_size_y = 3, grid_size_x = 3, pixels_needed = 3;
+
+
 // Define print_details function
 void Pixel::print_details(int row, int col)
 {
@@ -28,16 +39,9 @@ bool Pixel::get_selected()
 	return selected;
 }
 
-// Size of the grid (Here are default values that can be changed in the start menu)
-int grid_size_y = 3, grid_size_x = 3, pixels_needed = 3;
-// Characters that render.h uses to render the characters
-char empty_pixel = ' ', unknown_pixel = '?', player_a_pixel = 'X', player_b_pixel = 'O';
-
-int ch;
-
-int max_y, max_x;
 
 std::vector < std::vector<Pixel> > grid;
+
 
 // Function to get and set Pixel properties safely by avoiding out of bound access
 
@@ -82,3 +86,5 @@ void set_grid_sel(int pos_y, int pos_x, bool selected)
 }
 
 int turn = 0;
+
+int ch;

@@ -2,7 +2,8 @@
 #include <vector>
 
 // Characters that rendering.h uses to render the characters
-extern char empty_pixel, unknown_pixel, player_a_pixel, player_b_pixel;
+extern char empty_pixel, unknown_pixel, player_one_pixel, player_two_pixel;
+extern int player_one_color, player_two_color;
 
 extern int max_x, max_y;
 

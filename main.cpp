@@ -14,9 +14,15 @@ int main()
 	keypad(stdscr, TRUE);
 	start_color();
 	curs_set(0);
+	 
 	// Initialize Color pairs
 	init_pair(1, COLOR_GREEN, COLOR_BLACK);
 	init_pair(2, COLOR_RED, COLOR_BLACK);
+	init_pair(3, COLOR_BLUE, COLOR_BLACK);
+	init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+	// Error color pair
+	init_pair(66, COLOR_WHITE, COLOR_RED);
+	 
 	// Get the initial screen size
 	max_x = getmaxx(stdscr);
 	max_y = getmaxy(stdscr);
