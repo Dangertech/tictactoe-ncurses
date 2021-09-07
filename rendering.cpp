@@ -28,7 +28,9 @@ void start_menu()
 		{"Columns", grid_size_x, {}, 0,  false}, 
 		{"Pixels needed to win", pixels_needed, {}, 0, false}, 
 		{"Player 1's Color:", 0, {"Green", "Red", "Blue", "Yellow"}, player_one_color - 1, false }, 
-		{"Player 2's Color:", 0, {"Green", "Red", "Blue", "Yellow"}, player_two_color - 1, false }
+		{"Player 1's Icon:", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 0, false },
+		{"Player 2's Color:", 0, {"Green", "Red", "Blue", "Yellow"}, player_two_color - 1, false },
+		{"Player 2's Icon:", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 1, false }
 	};
 	
 	int window_rows = start_menu.size() + 4, window_columns = 50;
@@ -140,7 +142,24 @@ void start_menu()
 			start_menu[2].error = true;
 		}
 		 
-		// Print error messages
+		// Pixel color
+		if (start_menu[3].text_loc == start_menu[5].text_loc)
+		{
+			error_msgs.push_back("Having both players with the same color is not recommended");
+			start_menu[3].error = true;
+			start_menu[5].error = true;
+		}
+		 
+		// Player icons
+		if (start_menu[4].text_loc == start_menu[6].text_loc)
+		{
+			error_msgs.push_back("Having both players with the same icons is not recommended");
+			start_menu[4].error = true;
+			start_menu[6].error = true;
+		}
+		 
+		 
+		//// Print error messages
 		erase();
 		attron( COLOR_PAIR(2) );
 		for (int i = 0; i < error_msgs.size(); i++)
@@ -161,7 +180,6 @@ void start_menu()
 		box(menu_win, 1, 0);
 		 
 		// Create a title and some decorations outside of the window
-		mvprintw( max_y - 5, 2, "%d", selected_entry);
 		mvcprintw( 3, "TIC TAC TOE");
 		mvprintw( y_origin-1, x_origin, "Starting a new game:");
 		mvwprintw(menu_win, window_rows - 1, window_columns - 10, "<Enter>");
@@ -205,6 +223,7 @@ void start_menu()
 			if (start_menu[i].display_text.size() == 0)
 				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 8, "%d", start_menu[i].display_value );
 			else
+				// Else, show the text of the current entry
 				mvwprintw( menu_win, i + y_borders, getmaxx(menu_win) - 8, start_menu[i].display_text[start_menu[i].text_loc].c_str() );
 			// Turn the possible color pairs off
 			wattroff( menu_win, A_STANDOUT );
@@ -222,7 +241,9 @@ void start_menu()
 	grid_size_x = start_menu[1].display_value;
 	pixels_needed = start_menu[2].display_value;
 	player_one_color = start_menu[3].text_loc + 1;
-	player_two_color = start_menu[4].text_loc + 1;
+	player_one_pixel = start_menu[4].display_text[start_menu[4].text_loc].at(0);
+	player_two_color = start_menu[5].text_loc + 1;
+	player_two_pixel = start_menu[6].display_text[start_menu[6].text_loc].at(0);
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
