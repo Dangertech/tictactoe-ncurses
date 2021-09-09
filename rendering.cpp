@@ -242,11 +242,11 @@ void start_menu()
 	grid_size_y = start_menu[0].display_value;
 	grid_size_x = start_menu[1].display_value;
 	pixels_needed = start_menu[2].display_value;
-	gamemode = start_menu[3].text_loc - 1;
+	gamemode = start_menu[3].text_loc;
 	player_one_color = start_menu[4].text_loc + 1;
-	player_one_pixel = start_menu[5].display_text[start_menu[4].text_loc].at(0);
+	player_one_pixel = start_menu[5].display_text[start_menu[5].text_loc].at(0);
 	player_two_color = start_menu[6].text_loc + 1;
-	player_two_pixel = start_menu[7].display_text[start_menu[6].text_loc].at(0);
+	player_two_pixel = start_menu[7].display_text[start_menu[7].text_loc].at(0);
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
@@ -349,7 +349,16 @@ void render_grid()
 		// Repeat on a new line
 		printw("\n");
 	}
+	if (current_player == 1)
+		attron(COLOR_PAIR(player_one_color));
+	else if (current_player == 2)
+		attron(COLOR_PAIR(player_two_color));
 	make_rectangle(start_y, start_x, start_y + grid.size() * 2, start_x + grid[0].size() * 6);
+	if (current_player == 1)
+		attron(COLOR_PAIR(player_one_color));
+	else if (current_player == 2)
+		attron(COLOR_PAIR(player_two_color));
+	attroff(COLOR_PAIR(current_player));
 	mvprintw(start_y + grid.size() * 2, start_x + 2, "Turn: %d/%d", turn, (grid.size() * grid[0].size())/2);
 }
 

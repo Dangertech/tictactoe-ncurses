@@ -5,6 +5,7 @@
 // Characters that render.h uses to render the characters
 // Although the values here might seem to affect the entry that start_menu starts with, they are just fallback values
 int gamemode = 0; // Gamemode: 0: Singleplayer; 1: Multiplayer;
+int current_player;
 char empty_pixel = ' ', unknown_pixel = '?', player_one_pixel = 'X', player_two_pixel = 'O';
 int player_one_color = 1, player_two_color = 2;
 
