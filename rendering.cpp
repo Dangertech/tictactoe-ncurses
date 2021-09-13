@@ -192,7 +192,9 @@ void start_menu()
 			if (selected_entry == i)
 			{
 				// Render the input indicator 
-				// 
+				 
+				 
+				// Compute the position the right indicator has to render on
 				int digit_size = 1;
 				// If the display_text vector is empty, and the number should be shown
 				if (start_menu[i].display_text.size() == 0)
@@ -250,6 +252,106 @@ void start_menu()
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
+}
+
+int win_menu()
+{
+	// Create a new window
+	WINDOW *menu_win;
+	// Construction variables
+	int window_rows = 20,  window_columns = 50;
+	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = 10;
+	menu_win = newwin( window_rows, window_columns, y_origin, x_origin);
+	 
+	int selected = 0;
+	
+	 
+	// Input
+	ch = 0;
+	while (ch != 10) 
+	{
+		///// PROCESSING INPUT
+		//
+		switch (ch)
+		{
+			case 113:
+				delwin(menu_win);
+				return 0;
+				break;
+			case KEY_UP:
+				selected = 0;
+				break;
+			case KEY_DOWN:
+				selected = 1;
+				break;
+		}
+		
+		 
+		///// RENDERING
+		 
+		// The most basic renderer because there are only two options
+		werase( menu_win );
+		if (selected == 0)
+		{
+			// "Restart" stands out
+			// Indicators
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 - 5, "<" );
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 + 5, ">" );
+			wattron(menu_win, A_STANDOUT);
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 - 3, "Restart" );
+			wattroff(menu_win, A_STANDOUT);
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 - 2, "Quit" );
+		}
+		else if (selected == 1)
+		{
+			// "Quit" stands out
+			// Indicators
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 - 4, "<" );
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 + 3, ">" );
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 - 3, "Restart" );
+			wattron(menu_win, A_STANDOUT);
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 - 2, "Quit" );
+			wattroff(menu_win, A_STANDOUT);
+		}
+		 
+		 
+		// Make an outline box in the color of the current player
+		int color;
+		if (current_player == 1)
+			color = player_one_color;
+		else if (current_player == 2)
+			color = player_two_color;
+		wattron(menu_win, COLOR_PAIR(color));
+		box(menu_win, 0, 0);
+		wattroff(menu_win, COLOR_PAIR(color));
+		 
+		 
+		// Win message in yellow
+		wattron(menu_win, COLOR_PAIR(4));
+		mvwprintw( menu_win, 5, window_columns / 2 - 8, "Player %d has won!", current_player );
+		wattroff(menu_win, COLOR_PAIR(4));
+		 
+		wattron( menu_win, COLOR_PAIR(4) );
+		mvwprintw( menu_win, 0, 0, "/");
+		mvwprintw( menu_win, 0, window_columns - 1, "\\");
+		wattroff( menu_win, COLOR_PAIR(4) );
+		 
+		 
+		refresh();
+		wrefresh(menu_win);
+		 
+		// Get input character
+		ch = getch(); 
+	}
+	if (selected == 0)
+	{
+		return 1;
+	}
+	else if (selected == 1)
+		return 0;
+	// An error must have happened
+	delwin(menu_win);
+	return -5;
 }
 
 void render_title(int start_y, int start_x)

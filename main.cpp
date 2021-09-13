@@ -60,7 +60,7 @@ int main()
 	render_grid(); // Render the field once to show the grid before the user presses something
 	 
 	 
-	///////////////// Main game loop starts here, the 1 will probably be replaced with a winning condition
+	///////////////// Main game loop
 	
 	while (1)
 	{
@@ -75,6 +75,11 @@ int main()
 				// Grab input
 				ch = getch();
 				mvprintw(max_y-3, 2, "%d", ch);
+				if (ch == 113) // If 'q' is pressed, quit immediately
+				{
+					endwin();
+					return 0;
+				}
 				// Process arrow key input
 				switch(ch)
 				{
@@ -163,11 +168,22 @@ int main()
 		{
 			mvprintw(max_y - 8, 2, "Player %d has won!", win);
 			current_player = win;
+			break;
 		}
 		 
 		render_grid();
 	}
-
-	endwin();
-	return 0;
+	
+	int win_menu_state = win_menu();
+	if (win_menu_state == 0)
+	{
+		endwin();
+		return 0;
+	}
+	else if (win_menu_state == 1)
+	{
+		// Replace this with the restart trigger
+		endwin();
+		return 1;
+	}
 }
