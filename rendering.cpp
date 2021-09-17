@@ -335,6 +335,7 @@ int win_menu()
 		mvwprintw( menu_win, 5, window_columns / 2 - 8, "Player %d has won!", current_player );
 		wattroff(menu_win, COLOR_PAIR(4));
 		 
+		// Some random deco
 		wattron( menu_win, COLOR_PAIR(4) );
 		mvwprintw( menu_win, 0, 0, "/");
 		mvwprintw( menu_win, 0, window_columns - 1, "\\");
@@ -349,11 +350,16 @@ int win_menu()
 	}
 	 
 	 
-	if (selected == 0)
+	if (selected == 0) // 'Restart' selected
 	{
+		// erase the menu on the screen, delete the pointer and render the grid to fill spaces that might have been overwritten
+		werase(menu_win);
+		wrefresh(menu_win);
+		delwin(menu_win);
+		render_grid();
 		return 1;
 	}
-	else if (selected == 1)
+	else if (selected == 1) // 'Quit' selected
 		return 0;
 	// An error must have happened
 	delwin(menu_win);
