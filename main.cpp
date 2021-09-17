@@ -30,7 +30,11 @@ int main()
 	
 	///////////////// Make a "New Game" Menu
 	
-	start_menu();
+	if (start_menu() == 1)
+	{
+		endwin();
+		return 0;
+	}
 	
 	 
 	///////////////// Set up game

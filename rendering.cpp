@@ -5,7 +5,7 @@
 #include "rendering.h"
 
 // Make a 'New game' menu
-void start_menu() 
+int start_menu() 
 {
 	// Create a window that the menu will be displayed on
 	WINDOW *menu_win;
@@ -45,15 +45,15 @@ void start_menu()
 	{
 		switch (ch)
 		{
-			case KEY_UP:
+			case KEY_UP: case 'k': case 'w':
 				if (selected_entry > 0)
 					selected_entry--;
 			break;
-			case KEY_DOWN:
+			case KEY_DOWN: case 'j': case 's':
 				if (selected_entry < start_menu.size()-1)
 					selected_entry++;
 			break;
-			case KEY_LEFT:
+			case KEY_LEFT: case 'h': case 'a':
 				// If there is no text to be displayed, decrease the value of the int
 				if (start_menu[selected_entry].display_text.size() == 0)
 					start_menu[selected_entry].display_value--;
@@ -66,7 +66,7 @@ void start_menu()
 						start_menu[selected_entry].text_loc = start_menu[selected_entry].display_text.size() - 1;
 				}
 			break;
-			case KEY_RIGHT:
+			case KEY_RIGHT: case 'l': case 'd':
 				if (start_menu[selected_entry].display_text.size() == 0)
 					start_menu[selected_entry].display_value++;
 				else
@@ -75,6 +75,9 @@ void start_menu()
 					if (start_menu[selected_entry].text_loc == start_menu[selected_entry].display_text.size())
 						start_menu[selected_entry].text_loc = 0;
 				}
+			break;
+			case 'q':
+				return 1;
 			break;
 		}
 		 
@@ -252,6 +255,7 @@ void start_menu()
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
+	return 0;
 }
 
 int win_menu()
@@ -278,10 +282,10 @@ int win_menu()
 				delwin(menu_win);
 				return 0;
 				break;
-			case KEY_UP:
+			case KEY_UP: case 'k':
 				selected = 0;
 				break;
-			case KEY_DOWN:
+			case KEY_DOWN: case 'j':
 				selected = 1;
 				break;
 		}
@@ -343,6 +347,8 @@ int win_menu()
 		// Get input character
 		ch = getch(); 
 	}
+	 
+	 
 	if (selected == 0)
 	{
 		return 1;

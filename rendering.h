@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-void start_menu();
+int start_menu();
 
 int win_menu();
 
