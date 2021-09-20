@@ -37,13 +37,7 @@ int main()
 	}
 	
 	 
-	///////////////// Set up game
 	
-	int y_index = 0, x_index = 0;
-	// Clear ch before next use;
-	ch = 0;
-	bool is_done = false;
-	current_player = 1;
 	 
 	 
 	///////////////// Main game loop
@@ -51,7 +45,19 @@ int main()
 	bool restart = true;
 	while (restart == true) // Game Loop overspanning all games in this session
 	{
+		////// Set up game
+		 
+		ch = 0; // Clear ch before next use;
+		current_player = 1;
+		turn = 0;
+		bool is_done = false;
+		int y_index = 0, x_index = 0;
+		 
+		// Update the screen size every restart
+		max_x = getmaxx(stdscr);
+		max_y = getmaxy(stdscr);
 		grid.clear();
+		 
 		// Push all Pixels into the grid vector
 		for (int y = 0; y < grid_size_y; y++)
 		{
@@ -68,6 +74,9 @@ int main()
 		set_grid_sel(0, 0, true);
 		y_index = 0, x_index = 0;
 		
+		
+		///// Actual game
+		 
 		render_grid(); // Render the field once to show the grid before the user presses something
 		 
 		while (1) // Loop while the main game is running

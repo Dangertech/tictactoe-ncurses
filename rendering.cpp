@@ -188,6 +188,11 @@ int start_menu()
 		mvcprintw( 3, "TIC TAC TOE");
 		mvprintw( y_origin-1, x_origin, "Starting a new game:");
 		mvwprintw(menu_win, window_rows - 1, window_columns - 10, "<Enter>");
+		// Error message if the terminal is too small
+		attron(COLOR_PAIR(66));
+		if (max_y < 40 || max_x < 70)
+			mvprintw(0, 0, "Terminal too small for tictactoe-ncurses.\n You may experience rendering issues");
+		attroff(COLOR_PAIR(66));
 		 
 		// Render window contents
 		for (int i = 0; i < start_menu.size(); i++)
@@ -263,8 +268,20 @@ int win_menu()
 	// Create a new window
 	WINDOW *menu_win;
 	// Construction variables
-	int window_rows = 20,  window_columns = 50;
-	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = 10;
+	int des_rows = 20, des_cols = 50;
+	int y_borders = 5, x_borders = 8;
+	int window_rows, window_columns;
+	// Determine window sizes
+	if (max_y > des_rows + y_borders*2)
+		window_rows = des_rows;
+	else
+		window_rows = max_y - y_borders*2;
+	 
+	if (max_x > des_cols + x_borders*2)
+		window_columns = des_cols;
+	else
+		window_columns = max_x - x_borders*2;
+	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = y_borders; // Center window horizontally
 	menu_win = newwin( window_rows, window_columns, y_origin, x_origin);
 	 
 	int selected = 0;
