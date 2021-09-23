@@ -41,7 +41,7 @@ int start_menu()
 	int selected_entry = 0;
 	menu_win = newwin( window_rows, window_columns, y_origin, x_origin); 
 	//Draw everything until the user confirms with 'Enter'
-	while (ch != 10)
+	while (ch != 10 && ch != ' ')
 	{
 		switch (ch)
 		{
@@ -190,7 +190,7 @@ int start_menu()
 		mvwprintw(menu_win, window_rows - 1, window_columns - 10, "<Enter>");
 		// Error message if the terminal is too small
 		attron(COLOR_PAIR(66));
-		if (max_y < 40 || max_x < 70)
+		if (max_y < 25 || max_x < 70)
 			mvprintw(0, 0, "Terminal too small for tictactoe-ncurses.\n You may experience rendering issues");
 		attroff(COLOR_PAIR(66));
 		 
@@ -289,7 +289,7 @@ int win_menu()
 	 
 	// Input
 	ch = 0;
-	while (ch != 10) 
+	while (ch != 10 && ch != ' ') 
 	{
 		///// PROCESSING INPUT
 		//
@@ -349,7 +349,14 @@ int win_menu()
 		 
 		// Win message in yellow
 		wattron(menu_win, COLOR_PAIR(4));
-		mvwprintw( menu_win, 5, window_columns / 2 - 8, "Player %d has won!", current_player );
+		if (gamemode == 0)
+		{
+			mvwprintw( menu_win, 5, window_columns / 2 - 8, "The computer has won!" );
+		}
+		else
+		{
+			mvwprintw( menu_win, 5, window_columns / 2 - 8, "Player %d has won!", current_player );
+		}
 		wattroff(menu_win, COLOR_PAIR(4));
 		 
 		// Some random deco

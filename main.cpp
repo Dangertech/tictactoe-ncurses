@@ -87,7 +87,7 @@ int main()
 				ch = 0;
 				 
 				// Player selects Pixel to occupy
-				while (ch != 10) // Loop until 'Enter' is pressed
+				while (ch != 10 && ch != ' ') // Loop until 'Enter' or Space is pressed
 				{
 					// Grab input
 					ch = getch();
@@ -174,7 +174,11 @@ int main()
 					current_player = 1; // Set current player to the real one again
 					turn++;
 					if (win == 2)
+					{
 						mvprintw(max_y - 8, 2, "The computer has won!");
+						current_player = win;
+						break;
+					}
 					else if (win == -1)
 						mvprintw(max_y - 8, 2, "The field is full! The game has finished with a tie!");
 				}
@@ -191,6 +195,7 @@ int main()
 			render_grid();
 		}
 		 
+		render_grid();
 		int win_menu_state = win_menu();
 		if (win_menu_state == 0)
 		{
