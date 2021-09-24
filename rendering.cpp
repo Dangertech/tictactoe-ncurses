@@ -5,7 +5,7 @@
 #include "rendering.h"
 
 // Make a 'New game' menu
-void start_menu() 
+int start_menu() 
 {
 	// Create a window that the menu will be displayed on
 	WINDOW *menu_win;
@@ -41,19 +41,19 @@ void start_menu()
 	int selected_entry = 0;
 	menu_win = newwin( window_rows, window_columns, y_origin, x_origin); 
 	//Draw everything until the user confirms with 'Enter'
-	while (ch != 10)
+	while (ch != 10 && ch != ' ')
 	{
 		switch (ch)
 		{
-			case KEY_UP:
+			case KEY_UP: case 'k': case 'w':
 				if (selected_entry > 0)
 					selected_entry--;
 			break;
-			case KEY_DOWN:
+			case KEY_DOWN: case 'j': case 's':
 				if (selected_entry < start_menu.size()-1)
 					selected_entry++;
 			break;
-			case KEY_LEFT:
+			case KEY_LEFT: case 'h': case 'a':
 				// If there is no text to be displayed, decrease the value of the int
 				if (start_menu[selected_entry].display_text.size() == 0)
 					start_menu[selected_entry].display_value--;
@@ -66,7 +66,7 @@ void start_menu()
 						start_menu[selected_entry].text_loc = start_menu[selected_entry].display_text.size() - 1;
 				}
 			break;
-			case KEY_RIGHT:
+			case KEY_RIGHT: case 'l': case 'd':
 				if (start_menu[selected_entry].display_text.size() == 0)
 					start_menu[selected_entry].display_value++;
 				else
@@ -75,6 +75,9 @@ void start_menu()
 					if (start_menu[selected_entry].text_loc == start_menu[selected_entry].display_text.size())
 						start_menu[selected_entry].text_loc = 0;
 				}
+			break;
+			case 'q':
+				return 1;
 			break;
 		}
 		 
@@ -185,6 +188,11 @@ void start_menu()
 		mvcprintw( 3, "TIC TAC TOE");
 		mvprintw( y_origin-1, x_origin, "Starting a new game:");
 		mvwprintw(menu_win, window_rows - 1, window_columns - 10, "<Enter>");
+		// Error message if the terminal is too small
+		attron(COLOR_PAIR(66));
+		if (max_y < 25 || max_x < 70)
+			mvprintw(0, 0, "Terminal too small for tictactoe-ncurses.\n You may experience rendering issues");
+		attroff(COLOR_PAIR(66));
 		 
 		// Render window contents
 		for (int i = 0; i < start_menu.size(); i++)
@@ -192,7 +200,9 @@ void start_menu()
 			if (selected_entry == i)
 			{
 				// Render the input indicator 
-				// 
+				 
+				 
+				// Compute the position the right indicator has to render on
 				int digit_size = 1;
 				// If the display_text vector is empty, and the number should be shown
 				if (start_menu[i].display_text.size() == 0)
@@ -250,6 +260,134 @@ void start_menu()
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
+	return 0;
+}
+
+int win_menu()
+{
+	// Create a new window
+	WINDOW *menu_win;
+	// Construction variables
+	int des_rows = 20, des_cols = 50;
+	int y_borders = 5, x_borders = 8;
+	int window_rows, window_columns;
+	// Determine window sizes
+	if (max_y > des_rows + y_borders*2)
+		window_rows = des_rows;
+	else
+		window_rows = max_y - y_borders*2;
+	 
+	if (max_x > des_cols + x_borders*2)
+		window_columns = des_cols;
+	else
+		window_columns = max_x - x_borders*2;
+	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = y_borders; // Center window horizontally
+	menu_win = newwin( window_rows, window_columns, y_origin, x_origin);
+	 
+	int selected = 0;
+	
+	 
+	// Input
+	ch = 0;
+	while (ch != 10 && ch != ' ') 
+	{
+		///// PROCESSING INPUT
+		//
+		switch (ch)
+		{
+			case 113:
+				delwin(menu_win);
+				return 0;
+				break;
+			case KEY_UP: case 'k':
+				selected = 0;
+				break;
+			case KEY_DOWN: case 'j':
+				selected = 1;
+				break;
+		}
+		
+		 
+		///// RENDERING
+		 
+		// The most basic renderer because there are only two options
+		werase( menu_win );
+		if (selected == 0)
+		{
+			// "Restart" stands out
+			// Indicators
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 - 5, "<" );
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 + 5, ">" );
+			wattron(menu_win, A_STANDOUT);
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 - 3, "Restart" );
+			wattroff(menu_win, A_STANDOUT);
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 - 2, "Quit" );
+		}
+		else if (selected == 1)
+		{
+			// "Quit" stands out
+			// Indicators
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 - 4, "<" );
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 + 3, ">" );
+			mvwprintw( menu_win, window_rows - 6, window_columns / 2 - 3, "Restart" );
+			wattron(menu_win, A_STANDOUT);
+			mvwprintw( menu_win, window_rows - 5, window_columns / 2 - 2, "Quit" );
+			wattroff(menu_win, A_STANDOUT);
+		}
+		 
+		 
+		// Make an outline box in the color of the current player
+		int color;
+		if (current_player == 1)
+			color = player_one_color;
+		else if (current_player == 2)
+			color = player_two_color;
+		wattron(menu_win, COLOR_PAIR(color));
+		box(menu_win, 0, 0);
+		wattroff(menu_win, COLOR_PAIR(color));
+		 
+		 
+		// Win message in yellow
+		wattron(menu_win, COLOR_PAIR(4));
+		if (gamemode == 0)
+		{
+			mvwprintw( menu_win, 5, window_columns / 2 - 8, "The computer has won!" );
+		}
+		else
+		{
+			mvwprintw( menu_win, 5, window_columns / 2 - 8, "Player %d has won!", current_player );
+		}
+		wattroff(menu_win, COLOR_PAIR(4));
+		 
+		// Some random deco
+		wattron( menu_win, COLOR_PAIR(4) );
+		mvwprintw( menu_win, 0, 0, "/");
+		mvwprintw( menu_win, 0, window_columns - 1, "\\");
+		wattroff( menu_win, COLOR_PAIR(4) );
+		 
+		 
+		refresh();
+		wrefresh(menu_win);
+		 
+		// Get input character
+		ch = getch(); 
+	}
+	 
+	 
+	if (selected == 0) // 'Restart' selected
+	{
+		// erase the menu on the screen, delete the pointer and render the grid to fill spaces that might have been overwritten
+		werase(menu_win);
+		wrefresh(menu_win);
+		delwin(menu_win);
+		render_grid();
+		return 1;
+	}
+	else if (selected == 1) // 'Quit' selected
+		return 0;
+	// An error must have happened
+	delwin(menu_win);
+	return -5;
 }
 
 void render_title(int start_y, int start_x)
