@@ -21,7 +21,8 @@ int human_turn()
 		{
 			// Grab input
 			ch = getch();
-			mvprintw(max_y-3, 2, "%d", ch);
+			if (dbg == true)
+				mvprintw(max_y-3, 2, "%d", ch);
 			if (ch == 113) // If 'q' is pressed, quit immediately
 			{
 				return 1;
@@ -58,12 +59,14 @@ int human_turn()
 				x_index = 0;
 			if (x_index > grid[0].size()-1) 
 				x_index = grid[0].size() -1; 
-			  
-			mvprintw(max_y -5, 2, "y_index: %d, x_index: %d, grid.size(): %d, grid[0].size: %d", y_index, x_index, grid.size(), grid[0].size());
+			
+			if (dbg == true)
+				mvprintw(max_y -5, 2, "y_index: %d, x_index: %d, grid.size(): %d, grid[0].size: %d", y_index, x_index, grid.size(), grid[0].size());
 			// Select the Pixel with the current index
 			set_grid_sel(y_index, x_index, true);
 			// Print the details of the currently selected pixel
-			grid[y_index][x_index].print_details(max_y-4, 2);
+			if (dbg == true)
+				grid[y_index][x_index].print_details(max_y-4, 2);
 			// Render it!
 			render_grid();
 		}
