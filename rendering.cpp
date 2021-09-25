@@ -355,10 +355,13 @@ int win_menu()
 		{
 			mvwprintw( menu_win, 5, window_columns / 2 - 8, "The computer has won!" );
 		}
-		else
+		else if (current_player != -1)
 		{
 			mvwprintw( menu_win, 5, window_columns / 2 - 8, "Player %d has won!", current_player );
 		}
+		else
+			mvwprintw( menu_win, 5, window_columns / 2 - 14, "The grid is full. It's a tie!" );
+		 
 		wattroff(menu_win, COLOR_PAIR(4));
 		 
 		// Some random deco

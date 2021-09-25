@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 
+extern bool dbg; // Debug variable
+
 // Characters that rendering.h uses to render the characters
 extern int gamemode;
 extern int starting_player;

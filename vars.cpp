@@ -2,6 +2,8 @@
 #include "vars.h"
 // Pack all important variables into a file to make them accessible
 
+bool dbg = false; // If set to true, debug info will be shown
+
 // Characters that render.h uses to render the characters
 // Although the values here might seem to affect the entry that start_menu starts with, they are just fallback values
 int gamemode = 0; // Gamemode: 0: Singleplayer; 1: Multiplayer;
@@ -55,7 +57,8 @@ int get_grid_val(int pos_y, int pos_x)
 		return grid[pos_y][pos_x].get_value();
 	else
 	{
-		mvprintw( max_y - 9, 2, "ERROR! Tried to get value of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
+		if (dbg == true)
+			mvprintw( max_y - 9, 2, "ERROR! Tried to get value of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
 		return 0;
 	}
 }
@@ -66,7 +69,7 @@ void set_grid_val(int pos_y, int pos_x, int val)
 	{
 		grid[pos_y][pos_x].set_value(val);
 	}
-	else
+	else if (dbg == true)
 		mvprintw( max_y - 10, 2, "ERROR! Tried to set value of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
 }
 
@@ -76,7 +79,8 @@ int get_grid_sel(int pos_y, int pos_x)
 		return grid[pos_y][pos_x].get_selected();
 	else
 	{
-		mvprintw( max_y - 11, 2, "ERROR! Tried to get selected of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
+		if (dbg == true)
+			mvprintw( max_y - 11, 2, "ERROR! Tried to get selected of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
 		return 0;
 	}
 }
@@ -85,7 +89,7 @@ void set_grid_sel(int pos_y, int pos_x, bool selected)
 {
 	if (pos_y < grid_size_y && pos_x < grid_size_x && pos_y >= 0 && pos_x >= 0)
 		grid[pos_y][pos_x].set_selected(selected);
-	else
+	else if (dbg == true)
 		mvprintw( max_y - 12, 2, "ERROR! Tried to set selected of nonexistent pixel: Y: %d X: %d", pos_y, pos_x);
 }
 

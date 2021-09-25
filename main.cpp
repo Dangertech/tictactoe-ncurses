@@ -36,7 +36,8 @@ int main()
 		return 0;
 	}
 	
-	mvprintw(max_y - 3, max_x - 20, "starting_player: %d", starting_player);
+	if (dbg == true)
+		mvprintw(max_y - 3, max_x - 20, "starting_player: %d", starting_player);
 	
 	 
 	 
@@ -93,6 +94,8 @@ int main()
 						current_player = 2;
 					else if (current_player == 2)
 						current_player = 1;
+					if (current_player == starting_player)
+						turn++;
 				}
 				else // Let the computer make a turn in singleplayer
 					current_player = 2;
@@ -103,12 +106,21 @@ int main()
 			
 			int win = detect_win();
 			if (win == 0)
-				mvprintw(max_y -8, 2, "No player has won");
+			{
+				if (dbg == true)
+					mvprintw(max_y -8, 2, "No player has won");
+			}
 			else if (win == -1)
-				mvprintw(max_y -8, 2, "The field is full! The game has finished with a tie!");
+			{
+				if (dbg == true)
+					mvprintw(max_y -8, 2, "The field is full! The game has finished with a tie!");
+				current_player = -1;
+				break;
+			}
 			else
 			{
-				mvprintw(max_y - 8, 2, "Player %d has won!", win);
+				if (dbg == true)
+					mvprintw(max_y - 8, 2, "Player %d has won!", win);
 				current_player = win;
 				break;
 			}
@@ -121,12 +133,18 @@ int main()
 				turn++;
 				if (win == 2)
 				{
-					mvprintw(max_y - 8, 2, "The computer has won!");
+					if (dbg == true)
+						mvprintw(max_y - 8, 2, "The computer has won!");
 					current_player = win;
 					break;
 				}
 				else if (win == -1)
-					mvprintw(max_y - 8, 2, "The field is full! The game has finished with a tie!");
+				{
+					if (dbg == true)
+						mvprintw(max_y - 8, 2, "The field is full! The game has finished with a tie!");
+					current_player = -1;
+					break;
+				}
 			} 
 			 
 			render_grid();
