@@ -222,25 +222,25 @@ int detect_win()
 	// Check if all spaces on the field are full
 	// Just reuse x_ and y_parse
 	// NOT WORKING AT THE MOMENT, Game just hangs if all fields are full because it tries to calculate an impossible computer turn
-	/*x_parse = 0, y_parse = 0;
-	while (y_parse < grid_size_y)
+	x_parse = 0, y_parse = 0;
+	while (1)
 	{
-		if (x_parse > grid_size_x-1)
+		// If y_parse has just grown over the grid size, return -1;
+		if (y_parse == grid_size_y)
+			return -1;
+		 
+		if (get_grid_val(y_parse, x_parse) == 0)
+			break;
+		 
+		// Continue parsing
+		if (x_parse == grid_size_x - 1)
 		{
 			x_parse = 0;
 			y_parse++;
 		}
 		else
-		{
 			x_parse++;
-		}
-		// If y_parse has just grown over the grid size, return -1;
-		// While would stop in the next operation
-		if (y_parse == grid_size_y -1)
-			return -1;
-		if (get_grid_val(y_parse, x_parse) == 0)
-			break;
-	}*/
+	}
 	 
 	// Return 0 if no one has won
 	if (vert_won == false && hor_won == false && dia_right_won == false && dia_left_won == false)

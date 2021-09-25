@@ -93,6 +93,8 @@ int main()
 						current_player = 2;
 					else if (current_player == 2)
 						current_player = 1;
+					if (current_player == starting_player)
+						turn++;
 				}
 				else // Let the computer make a turn in singleplayer
 					current_player = 2;
