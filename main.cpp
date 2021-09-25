@@ -36,7 +36,7 @@ int main()
 		return 0;
 	}
 	
-	 
+	mvprintw(max_y - 3, max_x - 20, "starting_player: %d", starting_player);
 	
 	 
 	 
@@ -48,10 +48,8 @@ int main()
 		////// Set up game
 		 
 		ch = 0; // Clear ch before next use;
-		current_player = 1;
+		current_player = starting_player;
 		turn = 0;
-		bool is_done = false;
-		int y_index = 0, x_index = 0;
 		 
 		// Update the screen size every restart
 		max_x = getmaxx(stdscr);
@@ -72,8 +70,7 @@ int main()
 		}
 		// Select the first pixel so that the player can easily see that there is some kind of cursor he can move
 		set_grid_sel(0, 0, true);
-		y_index = 0, x_index = 0;
-		
+		y_index = 0, x_index = 0; // Also reset indices for the selection of human_turn()
 		
 		///// Actual game
 		 
@@ -81,76 +78,15 @@ int main()
 		 
 		while (1) // Loop while the main game is running
 		{
-			do // Loop to make sure the player selects a valid pixel
+			if (current_player == 1 || gamemode == 1)
 			{
-				// Clear ch so that ch in't 10 and the while loop gets skipped
-				ch = 0;
-				 
-				// Player selects Pixel to occupy
-				while (ch != 10 && ch != ' ') // Loop until 'Enter' or Space is pressed
+				// Let the human make a turn 
+				if (human_turn() == 1)
 				{
-					// Grab input
-					ch = getch();
-					mvprintw(max_y-3, 2, "%d", ch);
-					if (ch == 113) // If 'q' is pressed, quit immediately
-					{
-						endwin();
-						return 0;
-					}
-					// Process arrow key input
-					switch(ch)
-					{
-						case KEY_DOWN: case 'j': case 's':
-							y_index++; break;
-						case KEY_UP: case 'k': case 'w':
-							y_index--; break;
-						case KEY_LEFT: case 'h': case 'a':
-							x_index--; break;
-						case KEY_RIGHT: case 'l': case 'd':
-							x_index++; break;
-					}
-					
-					// Deselect all pixels
-					for (int i = 0; i < grid.size(); i++)
-					{
-						for (int j = 0; j < grid[i].size(); j++)
-						{
-							set_grid_sel(i, j, false);
-						}
-					}
-					 
-					// Check if indices should reset to another position because they got out of bounds
-					if (y_index < 0)
-						y_index = 0; 
-					if (y_index > grid.size()-1) 
-						y_index = grid.size() -1; 
-					if (x_index < 0) 
-						x_index = 0;
-					if (x_index > grid[0].size()-1) 
-						x_index = grid[0].size() -1; 
-					  
-					mvprintw(max_y -5, 2, "y_index: %d, x_index: %d, grid.size(): %d, grid[0].size: %d", y_index, x_index, grid.size(), grid[0].size());
-					// Select the Pixel with the current index
-					set_grid_sel(y_index, x_index, true);
-					// Print the details of the currently selected pixel
-					grid[y_index][x_index].print_details(max_y-4, 2);
-					// Render it!
-					render_grid();
+					endwin();
+					return 0;
 				}
-				 
-				// Check if that pixel is unoccupied
-				if (get_grid_val(y_index, x_index) == 0)
-				{
-					// Occupy the pixel with the current_player after the user presses 'Enter'
-					set_grid_val(y_index, x_index, current_player);
-					is_done = true;
-				}
-				else
-					// The loop continues until the player tries to occupy a valid pixel
-					is_done = false;
-				render_grid();
-			} while (is_done == false);
-			 
+			}
 			 
 			// Set current_player to the next one
 			if (current_player == 1)
@@ -167,7 +103,7 @@ int main()
 			if (win == 0)
 			{
 				mvprintw(max_y -8, 2, "No player has won");
-				if (gamemode == 0) // Singleplayer logic
+				if (gamemode == 0 && current_player == 2) // Singleplayer logic
 				{
 					computer_turn();
 					win = detect_win();

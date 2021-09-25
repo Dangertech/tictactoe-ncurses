@@ -271,7 +271,7 @@ int win_menu()
 	WINDOW *menu_win;
 	// Construction variables
 	int des_rows = 20, des_cols = 50;
-	int y_borders = 5, x_borders = 8;
+	int y_borders = 7, x_borders = 8;
 	int window_rows, window_columns;
 	// Determine window sizes
 	if (max_y > des_rows + y_borders*2)
@@ -351,7 +351,7 @@ int win_menu()
 		 
 		// Win message in yellow
 		wattron(menu_win, COLOR_PAIR(4));
-		if (gamemode == 0)
+		if (gamemode == 0 && current_player == 2)
 		{
 			mvwprintw( menu_win, 5, window_columns / 2 - 8, "The computer has won!" );
 		}

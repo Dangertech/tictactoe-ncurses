@@ -15,6 +15,7 @@ int max_y, max_x;
 // Size of the grid (Here are default values that can be changed in the start menu)
 int grid_size_y = 3, grid_size_x = 3, pixels_needed = 3;
 
+int y_index = 0, x_index = 0;
 
 // Define print_details function
 void Pixel::print_details(int row, int col)

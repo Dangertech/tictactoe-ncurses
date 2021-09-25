@@ -3,7 +3,86 @@
 #include <time.h>
 #include <ncurses.h>
 #include "vars.h"
+#include "rendering.h"
 #include "processing.h"
+
+
+// Let a human make a turn
+int human_turn()
+{
+	bool is_done = false;
+	do // Loop to make sure the player selects a valid pixel
+	{
+		// Clear ch so that ch in't 10 and the while loop gets skipped
+		ch = 0;
+		 
+		// Player selects Pixel to occupy
+		while (ch != 10 && ch != ' ') // Loop until 'Enter' or Space is pressed
+		{
+			// Grab input
+			ch = getch();
+			mvprintw(max_y-3, 2, "%d", ch);
+			if (ch == 113) // If 'q' is pressed, quit immediately
+			{
+				return 1;
+			}
+			 
+			// Process arrow key input
+			switch(ch)
+			{
+				case KEY_DOWN: case 'j': case 's':
+					y_index++; break;
+				case KEY_UP: case 'k': case 'w':
+					y_index--; break;
+				case KEY_LEFT: case 'h': case 'a':
+					x_index--; break;
+				case KEY_RIGHT: case 'l': case 'd':
+					x_index++; break;
+			}
+			
+			// Deselect all pixels
+			for (int i = 0; i < grid.size(); i++)
+			{
+				for (int j = 0; j < grid[i].size(); j++)
+				{
+					set_grid_sel(i, j, false);
+				}
+			}
+			 
+			// Check if indices should reset to another position because they got out of bounds
+			if (y_index < 0)
+				y_index = 0; 
+			if (y_index > grid.size()-1) 
+				y_index = grid.size() -1; 
+			if (x_index < 0) 
+				x_index = 0;
+			if (x_index > grid[0].size()-1) 
+				x_index = grid[0].size() -1; 
+			  
+			mvprintw(max_y -5, 2, "y_index: %d, x_index: %d, grid.size(): %d, grid[0].size: %d", y_index, x_index, grid.size(), grid[0].size());
+			// Select the Pixel with the current index
+			set_grid_sel(y_index, x_index, true);
+			// Print the details of the currently selected pixel
+			grid[y_index][x_index].print_details(max_y-4, 2);
+			// Render it!
+			render_grid();
+		}
+		 
+		// Check if that pixel is unoccupied
+		if (get_grid_val(y_index, x_index) == 0)
+		{
+			// Occupy the pixel with the current_player after the user presses 'Enter'
+			set_grid_val(y_index, x_index, current_player);
+			is_done = true;
+		}
+		else
+			// The loop continues until the player tries to occupy a valid pixel
+			is_done = false;
+		render_grid();
+	} while (is_done == false);
+	return 0;
+}
+
 
 // Check if a player has won
 int detect_win()
