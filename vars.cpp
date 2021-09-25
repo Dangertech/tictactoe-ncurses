@@ -5,6 +5,7 @@
 // Characters that render.h uses to render the characters
 // Although the values here might seem to affect the entry that start_menu starts with, they are just fallback values
 int gamemode = 0; // Gamemode: 0: Singleplayer; 1: Multiplayer;
+int starting_player;
 int current_player;
 char empty_pixel = ' ', unknown_pixel = '?', player_one_pixel = 'X', player_two_pixel = 'O';
 int player_one_color = 1, player_two_color = 2;
@@ -14,6 +15,7 @@ int max_y, max_x;
 // Size of the grid (Here are default values that can be changed in the start menu)
 int grid_size_y = 3, grid_size_x = 3, pixels_needed = 3;
 
+int y_index = 0, x_index = 0;
 
 // Define print_details function
 void Pixel::print_details(int row, int col)

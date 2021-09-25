@@ -28,10 +28,11 @@ int start_menu()
 		{"Columns", grid_size_x, {}, 0,  false}, 
 		{"Pixels needed to win", pixels_needed, {}, 0, false}, 
 		{"Gamemode", 0, {"Singleplayer", "Multiplayer"}, 0, false },
-		{"Player 1's Color:", 0, {"Green", "Red", "Blue", "Yellow"}, player_one_color - 1, false }, 
-		{"Player 1's Icon:", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 0, false },
-		{"Player 2's Color:", 0, {"Green", "Red", "Blue", "Yellow"}, player_two_color - 1, false },
-		{"Player 2's Icon:", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 1, false }
+		{"Player 1's Color", 0, {"Green", "Red", "Blue", "Yellow"}, player_one_color - 1, false }, 
+		{"Player 1's Icon", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 0, false },
+		{"Player 2's Color", 0, {"Green", "Red", "Blue", "Yellow"}, player_two_color - 1, false },
+		{"Player 2's Icon", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 1, false },
+		{"Starting Player", 0, {"You", "Opponent"}, starting_player, false}
 	};
 	
 	int window_rows = start_menu.size() + 4, window_columns = 50;
@@ -257,6 +258,7 @@ int start_menu()
 	player_one_pixel = start_menu[5].display_text[start_menu[5].text_loc].at(0);
 	player_two_color = start_menu[6].text_loc + 1;
 	player_two_pixel = start_menu[7].display_text[start_menu[7].text_loc].at(0);
+	starting_player = start_menu[8].text_loc + 1;
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
@@ -269,7 +271,7 @@ int win_menu()
 	WINDOW *menu_win;
 	// Construction variables
 	int des_rows = 20, des_cols = 50;
-	int y_borders = 5, x_borders = 8;
+	int y_borders = 7, x_borders = 8;
 	int window_rows, window_columns;
 	// Determine window sizes
 	if (max_y > des_rows + y_borders*2)
@@ -349,7 +351,7 @@ int win_menu()
 		 
 		// Win message in yellow
 		wattron(menu_win, COLOR_PAIR(4));
-		if (gamemode == 0)
+		if (gamemode == 0 && current_player == 2)
 		{
 			mvwprintw( menu_win, 5, window_columns / 2 - 8, "The computer has won!" );
 		}

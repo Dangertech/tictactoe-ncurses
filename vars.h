@@ -3,11 +3,15 @@
 
 // Characters that rendering.h uses to render the characters
 extern int gamemode;
+extern int starting_player;
 extern int current_player; // Variable to get the current player, set in the main loop
 extern char empty_pixel, unknown_pixel, player_one_pixel, player_two_pixel;
 extern int player_one_color, player_two_color;
 
 extern int max_x, max_y;
+
+// selection values used by human_turn(), have to be reset in main()
+extern int y_index, x_index;
 
 // Size of the grid 
 extern int grid_size_y, grid_size_x, pixels_needed;
