@@ -81,44 +81,29 @@ int main()
 			if (current_player == 1 || gamemode == 1)
 			{
 				// Let the human make a turn 
-				if (human_turn() == 1)
+				if (human_turn() == 1) // Returns 1 if the user presses 'q' to quit
 				{
 					endwin();
 					return 0;
 				}
+				 
+				if (gamemode == 1) // Advance in multiplayer
+				{
+					if (current_player == 1)
+						current_player = 2;
+					else if (current_player == 2)
+						current_player = 1;
+				}
+				else // Let the computer make a turn in singleplayer
+					current_player = 2;
 			}
+			
 			 
-			// Set current_player to the next one
-			if (current_player == 1)
-				current_player = 2;
-			else if (current_player == 2)
-			{
-				current_player = 1;
-				turn++; // Increase the turn count if the 2nd player (no matter if computer or human) has made their turn
-			}
-			 
-			////////// Check if a player has won
+			// Check if a player has won
 			
 			int win = detect_win();
 			if (win == 0)
-			{
 				mvprintw(max_y -8, 2, "No player has won");
-				if (gamemode == 0 && current_player == 2) // Singleplayer logic
-				{
-					computer_turn();
-					win = detect_win();
-					current_player = 1; // Set current player to the real one again
-					turn++;
-					if (win == 2)
-					{
-						mvprintw(max_y - 8, 2, "The computer has won!");
-						current_player = win;
-						break;
-					}
-					else if (win == -1)
-						mvprintw(max_y - 8, 2, "The field is full! The game has finished with a tie!");
-				}
-			}
 			else if (win == -1)
 				mvprintw(max_y -8, 2, "The field is full! The game has finished with a tie!");
 			else
@@ -127,6 +112,22 @@ int main()
 				current_player = win;
 				break;
 			}
+			 
+			if (gamemode == 0 && current_player == 2) // Singleplayer logic
+			{
+				computer_turn();
+				win = detect_win();
+				current_player = 1; // Set current player to the real one again
+				turn++;
+				if (win == 2)
+				{
+					mvprintw(max_y - 8, 2, "The computer has won!");
+					current_player = win;
+					break;
+				}
+				else if (win == -1)
+					mvprintw(max_y - 8, 2, "The field is full! The game has finished with a tie!");
+			} 
 			 
 			render_grid();
 		}
