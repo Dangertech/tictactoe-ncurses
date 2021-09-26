@@ -395,6 +395,64 @@ int win_menu()
 	return -5;
 }
 
+void help_text(int start_y, int start_x)
+{
+	// Gamemode
+	mvprintw(start_y, start_x, "You are playing a ");
+	attron(A_BOLD); 
+	if (gamemode == 0)
+		printw("Singleplayer");
+	else if (gamemode == 1)
+		printw("Multiplayer");
+	else
+		printw("Oopstheremusthavebeenanerrorbecauseihavenofuckingideowhatgamemodeyourein");
+	attroff(A_BOLD);
+	printw(" game.\n");
+	for (int i = 0; i < start_x; i++)
+		printw(" ");
+	 
+	// Players turn
+	if (gamemode == 0)
+		printw("It is your turn. The computer doesn't have to think like you inferior humans.\n\n");
+	else if (gamemode == 1)
+	{
+		printw("It is Player ");
+		attron(A_BOLD); printw("%d", current_player); attroff(A_BOLD);
+		printw("'s turn.\n");
+	}
+	for (int i = 0; i < start_x; i++)
+		printw(" ");
+	 
+	// pixels_needed
+	printw("You need ");
+	attron(A_BOLD); printw("%d ", pixels_needed); attroff(A_BOLD);
+	printw("pixels in a row to win.\n");
+	for (int i = 0; i < start_x; i++)
+		printw(" ");
+	 
+	// Use the Vi keys [ hjkl ] or [ WASD ] to move the cursor.
+	printw("Use the Vi keys ");
+	attron(A_BOLD); printw("[ hjkl ] "); attroff(A_BOLD);
+	printw("or ");
+	attron(A_BOLD); printw("[ wasd ] "); attroff(A_BOLD);
+	printw("to move the cursor.\n");
+	for (int i = 0; i < start_x; i++)
+		printw(" ");
+	 
+	// Confirm your choice with [ Space ] or [ Enter ].
+	printw("Confirm your choice with ");
+	attron(A_BOLD); printw("[ Space ] "); attroff(A_BOLD);
+	printw("or ");
+	attron(A_BOLD); printw("[ Enter ]"); attroff(A_BOLD);
+	printw(".\n");
+	for (int i = 0; i < start_x; i++)
+		printw(" ");
+	// Quit with [ q ].
+	printw("Quit with ");
+	attron(A_BOLD); printw("[ q ]"); attroff(A_BOLD);
+	printw(".");
+}
+
 void render_title(int start_y, int start_x)
 {
 	// Render the title

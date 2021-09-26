@@ -1,6 +1,4 @@
 #include <ncurses.h>
-#include <string>
-#include <vector>
 #include "vars.h"
 #include "rendering.h"
 #include "processing.h"
@@ -79,6 +77,8 @@ int main()
 		 
 		while (1) // Loop while the main game is running
 		{
+			if (dbg == false && max_y > grid_size_y * 2 + 13)
+				help_text(max_y - 8, 2);
 			if (current_player == 1 || gamemode == 1)
 			{
 				// Let the human make a turn 

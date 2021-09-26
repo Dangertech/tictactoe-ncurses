@@ -221,7 +221,7 @@ int detect_win()
 		}
 		
 	}
-
+	 
 	// Check if all spaces on the field are full
 	// Just reuse x_ and y_parse
 	// NOT WORKING AT THE MOMENT, Game just hangs if all fields are full because it tries to calculate an impossible computer turn
