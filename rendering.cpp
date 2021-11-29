@@ -36,7 +36,7 @@ int start_menu()
 	};
 	
 	int window_rows = start_menu.size() + 4, window_columns = 50;
-	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = 10;
+	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = 13;
 	int y_borders = 2; // Space to be left out before the first entry gets rendered
 	int dis_val_start = window_columns - 16; // At which column to start rendering the entries
 	int selected_entry = 0;
@@ -186,7 +186,12 @@ int start_menu()
 		box(menu_win, 1, 0);
 		 
 		// Create a title and some decorations outside of the window
-		mvcprintw( 3, "TIC TAC TOE");
+		// I swear this looks halfway decent in the actual menu
+		mvcprintw( 3, " _____ ___ ____   _____  _    ____   _____ ___  _____ ");
+		mvcprintw( 4, "|XOXXO|OXO/XOXO| |OOXOX|/X\\  /XOOX| |OXXOX/OXO\\|XXOXO|");
+		mvcprintw( 5, "  |O|  |X|X|       |O| /O_X\\|X|       |X||O| |O|OXO|  ");
+		mvcprintw( 6, "  |X|  |O|X|___    |X|/OXOXX\\O|___    |O||O| |O|O|___ ");
+		mvcprintw( 7, " |X|  |OO\\OOXX|   |X/O/   \\O\\OXXO|   |X| \\XXO/|OXXOX|");
 		mvprintw( y_origin-1, x_origin, "Starting a new game:");
 		mvwprintw(menu_win, window_rows - 1, window_columns - 10, "<Enter>");
 		// Error message if the terminal is too small
