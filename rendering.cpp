@@ -4,38 +4,82 @@
 #include "vars.h"
 #include "rendering.h"
 
+////// START MENU
+
+
+// Create a struct that holds option properties
+struct menu_options
+{
+	std::string description;
+	// Int if the option should have a value
+	int display_value;
+	// Text if the option should have different strings of text
+	std::vector < std::string > display_text;
+	int text_loc; // Pointer to the current entry to be displayed
+	bool error;
+};
+ 
+// Construct a vector with the options
+std::vector <menu_options> menu_container = 
+{ 
+	{"Rows", grid_size_y,{}, 0, false}, 
+	{"Columns", grid_size_x, {}, 0,  false}, 
+	{"Pixels needed to win", pixels_needed, {}, 0, false}, 
+	{"Gamemode", 0, {"Singleplayer", "Multiplayer"}, 0, false },
+	{"Player 1's Color", 0, {"Green", "Red", "Blue", "Yellow"}, player_one_color - 1, false }, 
+	{"Player 1's Icon", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 0, false },
+	{"Player 2's Color", 0, {"Green", "Red", "Blue", "Yellow"}, player_two_color - 1, false },
+	{"Player 2's Icon", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 1, false },
+	{"Starting Player", 0, {"You", "Opponent"}, starting_player, false}
+};
+
+// Function to render the menu later on with colors and characters
+// matching the ones set by the player(s)
+void xoxoprint(int line, std::string xoxo_str)
+{
+	int start_x = (max_x/2) - (xoxo_str.length() / 2);
+	move(line, start_x);
+	for (int i = 0; i<xoxo_str.length(); i++)
+	{
+		int temp_p_one_col = menu_container[4].text_loc + 1;
+		int temp_p_two_col = menu_container[6].text_loc + 1;
+		if (xoxo_str[i] == 'X')
+		{
+			// Print player_one's color and character
+			attron(COLOR_PAIR(temp_p_one_col));
+			addch(menu_container[5].display_text[menu_container[5].text_loc].at(0));
+			attroff(COLOR_PAIR(temp_p_two_col));
+		}
+		else if (xoxo_str[i] == 'O')
+		{
+			// Print player_two's color and character
+			attron(COLOR_PAIR(temp_p_two_col));
+			addch(menu_container[7].display_text[menu_container[7].text_loc].at(0));
+			attroff(COLOR_PAIR(temp_p_two_col));
+		}
+		else
+		{
+			// Print the remaining characters in the color
+			// of the starting player
+			if (menu_container[8].text_loc == 0)
+				attron(COLOR_PAIR(temp_p_one_col));
+			else if (menu_container[8].text_loc == 1)
+				attron(COLOR_PAIR(temp_p_two_col));
+			addch(xoxo_str[i]);
+			attroff(COLOR_PAIR(temp_p_one_col));
+			attroff(COLOR_PAIR(temp_p_two_col));
+		}
+	}
+}
+
 // Make a 'New game' menu
 int start_menu() 
 {
 	// Create a window that the menu will be displayed on
 	WINDOW *menu_win;
-	// Create a struct that holds option properties
-	struct menu_options
-	{
-		std::string description;
-		// Int if the option should have a value
-		int display_value;
-		// Text if the option should have different strings of text
-		std::vector < std::string > display_text;
-		int text_loc; // Pointer to the current entry to be displayed
-		bool error;
-	};
-	 
-	// Construct a vector with the options
-	std::vector <menu_options> start_menu = 
-	{ 
-		{"Rows", grid_size_y,{}, 0, false}, 
-		{"Columns", grid_size_x, {}, 0,  false}, 
-		{"Pixels needed to win", pixels_needed, {}, 0, false}, 
-		{"Gamemode", 0, {"Singleplayer", "Multiplayer"}, 0, false },
-		{"Player 1's Color", 0, {"Green", "Red", "Blue", "Yellow"}, player_one_color - 1, false }, 
-		{"Player 1's Icon", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 0, false },
-		{"Player 2's Color", 0, {"Green", "Red", "Blue", "Yellow"}, player_two_color - 1, false },
-		{"Player 2's Icon", 0, {"X", "O", "+", "-", "~", "@", "$", "#", "%"}, 1, false },
-		{"Starting Player", 0, {"You", "Opponent"}, starting_player, false}
-	};
+
 	
-	int window_rows = start_menu.size() + 4, window_columns = 50;
+	int window_rows = menu_container.size() + 4, window_columns = 50;
 	int x_origin = (max_x / 2) - ( window_columns / 2), y_origin = 13;
 	int y_borders = 2; // Space to be left out before the first entry gets rendered
 	int dis_val_start = window_columns - 16; // At which column to start rendering the entries
@@ -51,30 +95,30 @@ int start_menu()
 					selected_entry--;
 			break;
 			case KEY_DOWN: case 'j': case 's':
-				if (selected_entry < start_menu.size()-1)
+				if (selected_entry < menu_container.size()-1)
 					selected_entry++;
 			break;
 			case KEY_LEFT: case 'h': case 'a':
 				// If there is no text to be displayed, decrease the value of the int
-				if (start_menu[selected_entry].display_text.size() == 0)
-					start_menu[selected_entry].display_value--;
+				if (menu_container[selected_entry].display_text.size() == 0)
+					menu_container[selected_entry].display_value--;
 				// else, decrease the pointer to the current text entry
 				else
 				{
-					start_menu[selected_entry].text_loc--;
+					menu_container[selected_entry].text_loc--;
 					// Wrap around
-					if (start_menu[selected_entry].text_loc < 0)
-						start_menu[selected_entry].text_loc = start_menu[selected_entry].display_text.size() - 1;
+					if (menu_container[selected_entry].text_loc < 0)
+						menu_container[selected_entry].text_loc = menu_container[selected_entry].display_text.size() - 1;
 				}
 			break;
 			case KEY_RIGHT: case 'l': case 'd':
-				if (start_menu[selected_entry].display_text.size() == 0)
-					start_menu[selected_entry].display_value++;
+				if (menu_container[selected_entry].display_text.size() == 0)
+					menu_container[selected_entry].display_value++;
 				else
 				{
-					start_menu[selected_entry].text_loc++;
-					if (start_menu[selected_entry].text_loc == start_menu[selected_entry].display_text.size())
-						start_menu[selected_entry].text_loc = 0;
+					menu_container[selected_entry].text_loc++;
+					if (menu_container[selected_entry].text_loc == menu_container[selected_entry].display_text.size())
+						menu_container[selected_entry].text_loc = 0;
 				}
 			break;
 			case 'q':
@@ -96,7 +140,7 @@ int start_menu()
 		for (int i = 0; i < 2; i++)
 		{
 			  
-			int val = start_menu[i].display_value;
+			int val = menu_container[i].display_value;
 			// I know, this is pretty bad code but it's just a little easter egg
 			if (val < 2)
 			{
@@ -124,44 +168,44 @@ int start_menu()
 				error_msgs.push_back("Don't you have hobbies or something!?");
 			// Turn error to true in all cases from above
 			if (val < 2 || val > 30)
-				start_menu[i].error = true;
+				menu_container[i].error = true;
 		} 
 		 
 		// pixels_needed
-		int dis_pix = start_menu[2].display_value;
-		if (dis_pix > start_menu[0].display_value && dis_pix > start_menu[1].display_value)
+		int dis_pix = menu_container[2].display_value;
+		if (dis_pix > menu_container[0].display_value && dis_pix > menu_container[1].display_value)
 		{
 			error_msgs.push_back("A player needs more pixels in a row to win than there are rows and columns.");
 			error_msgs.push_back("It is impossible to win.");
-			start_menu[2].error = true;
+			menu_container[2].error = true;
 		}
-		else if (dis_pix > start_menu[0].display_value || dis_pix > start_menu[1].display_value)
+		else if (dis_pix > menu_container[0].display_value || dis_pix > menu_container[1].display_value)
 		{
 			error_msgs.push_back("The grid size is not large enough in one direction to win.");
 			error_msgs.push_back("A game might be harder to win.");
-			start_menu[2].error = true;
+			menu_container[2].error = true;
 		}
 		 
 		if (dis_pix < 2)
 		{
 			error_msgs.push_back("Pixel streaks lower than 2 may produce unexpected behaviour!");
-			start_menu[2].error = true;
+			menu_container[2].error = true;
 		}
 		 
 		// Pixel color
-		if (start_menu[4].text_loc == start_menu[6].text_loc)
+		if (menu_container[4].text_loc == menu_container[6].text_loc)
 		{
 			error_msgs.push_back("Having both players with the same color is not recommended");
-			start_menu[4].error = true;
-			start_menu[6].error = true;
+			menu_container[4].error = true;
+			menu_container[6].error = true;
 		}
 		 
 		// Player icons
-		if (start_menu[5].text_loc == start_menu[7].text_loc)
+		if (menu_container[5].text_loc == menu_container[7].text_loc)
 		{
 			error_msgs.push_back("Having both players with the same icons is not recommended");
-			start_menu[5].error = true;
-			start_menu[7].error = true;
+			menu_container[5].error = true;
+			menu_container[7].error = true;
 		}
 		 
 		 
@@ -187,11 +231,16 @@ int start_menu()
 		 
 		// Create a title and some decorations outside of the window
 		// I swear this looks halfway decent in the actual menu
-		mvcprintw( 3, " _____ ___ ____   _____  _    ____   _____ ___  _____ ");
-		mvcprintw( 4, "|XOXXO|OXO/XOXO| |OOXOX|/X\\  /XOOX| |OXXOX/OXO\\|XXOXO|");
-		mvcprintw( 5, "  |O|  |X|X|       |O| /O_X\\|X|       |X||O| |O|OXO|  ");
-		mvcprintw( 6, "  |X|  |O|X|___    |X|/OXOXX\\O|___    |O||O| |O|O|___ ");
-		mvcprintw( 7, " |X|  |OO\\OOXX|   |X/O/   \\O\\OXXO|   |X| \\XXO/|OXXOX|");
+		
+		// xoxoprint converts the string here to the matching color
+		// and character for each player
+		// The X's and O's here are just "placeholders"
+		xoxoprint( 3, " _____ ___ ____   _____  _    ____   _____ ___  _____ ");
+		xoxoprint( 4, "|XOXXO|OXO/XOXO| |OOXOX|/X\\  /XOOX| |OXXOX/OXO\\|XXOXO|");
+		xoxoprint( 5, "  |O|  |X|X|       |O| /O_X\\|X|       |X||O| |O|OXO|  ");
+		xoxoprint( 6, "  |X|  |O|X|___    |X|/OXOXX\\O|___    |O||O| |O|O|___ ");
+		xoxoprint( 7, " |X|  |OO\\OOXX|   |X/O/   \\O\\OXXO|   |X| \\XXO/|OXXOX|");
+		
 		mvprintw( y_origin-1, x_origin, "Starting a new game:");
 		mvwprintw(menu_win, window_rows - 1, window_columns - 10, "<Enter>");
 		// Error message if the terminal is too small
@@ -201,7 +250,7 @@ int start_menu()
 		attroff(COLOR_PAIR(66));
 		 
 		// Render window contents
-		for (int i = 0; i < start_menu.size(); i++)
+		for (int i = 0; i < menu_container.size(); i++)
 		{
 			if (selected_entry == i)
 			{
@@ -211,16 +260,16 @@ int start_menu()
 				// Compute the position the right indicator has to render on
 				int digit_size = 1;
 				// If the display_text vector is empty, and the number should be shown
-				if (start_menu[i].display_text.size() == 0)
+				if (menu_container[i].display_text.size() == 0)
 				{
-					if (start_menu[i].display_value > 9 || start_menu[i].display_value < 0)
+					if (menu_container[i].display_value > 9 || menu_container[i].display_value < 0)
 						digit_size = 2;
-					if (start_menu[i].display_value > 100 || start_menu[i].display_value < -9)
+					if (menu_container[i].display_value > 100 || menu_container[i].display_value < -9)
 						digit_size = 3;
 				}
 				else
 				{
-					digit_size = start_menu[i].display_text[start_menu[i].text_loc].length();
+					digit_size = menu_container[i].display_text[menu_container[i].text_loc].length();
 				}
 				mvwprintw( menu_win, i + y_borders, dis_val_start - 2, "<");
 				mvwprintw( menu_win, i + y_borders, dis_val_start + 1+ digit_size, ">");
@@ -230,24 +279,24 @@ int start_menu()
 			 
 			// If the current entry is reported erroneous,
 			// turn off the standout pair and activate the error color pair
-			if (start_menu[i].error == true)
+			if (menu_container[i].error == true)
 			{
 				wattroff( menu_win, A_STANDOUT );
 				wattron( menu_win, COLOR_PAIR(66) );
 			}
 			 
-			mvwprintw( menu_win, i + y_borders, 2, start_menu[i].description.c_str() );
+			mvwprintw( menu_win, i + y_borders, 2, menu_container[i].description.c_str() );
 			// If the size of the text vector is empty, show the integer
-			if (start_menu[i].display_text.size() == 0)
-				mvwprintw( menu_win, i + y_borders, dis_val_start, "%d", start_menu[i].display_value );
+			if (menu_container[i].display_text.size() == 0)
+				mvwprintw( menu_win, i + y_borders, dis_val_start, "%d", menu_container[i].display_value );
 			else
 				// Else, show the text of the current entry
-				mvwprintw( menu_win, i + y_borders, dis_val_start, start_menu[i].display_text[start_menu[i].text_loc].c_str() );
+				mvwprintw( menu_win, i + y_borders, dis_val_start, menu_container[i].display_text[menu_container[i].text_loc].c_str() );
 			// Turn the possible color pairs off
 			wattroff( menu_win, A_STANDOUT );
 			wattroff( menu_win, COLOR_PAIR(66) );
 			// Reset error value to check if it is still true on the next while iteration
-			start_menu[i].error = false;
+			menu_container[i].error = false;
 		}
 		refresh();
 		wrefresh( menu_win );
@@ -255,15 +304,15 @@ int start_menu()
 	}
 	// OK, this looks very ugly, but I couldn't find a better solution:
 	// Assign every real variable the variable in the vector
-	grid_size_y = start_menu[0].display_value;
-	grid_size_x = start_menu[1].display_value;
-	pixels_needed = start_menu[2].display_value;
-	gamemode = start_menu[3].text_loc;
-	player_one_color = start_menu[4].text_loc + 1;
-	player_one_pixel = start_menu[5].display_text[start_menu[5].text_loc].at(0);
-	player_two_color = start_menu[6].text_loc + 1;
-	player_two_pixel = start_menu[7].display_text[start_menu[7].text_loc].at(0);
-	starting_player = start_menu[8].text_loc + 1;
+	grid_size_y = menu_container[0].display_value;
+	grid_size_x = menu_container[1].display_value;
+	pixels_needed = menu_container[2].display_value;
+	gamemode = menu_container[3].text_loc;
+	player_one_color = menu_container[4].text_loc + 1;
+	player_one_pixel = menu_container[5].display_text[menu_container[5].text_loc].at(0);
+	player_two_color = menu_container[6].text_loc + 1;
+	player_two_pixel = menu_container[7].display_text[menu_container[7].text_loc].at(0);
+	starting_player = menu_container[8].text_loc + 1;
 	// Delete the window and clear the screen
 	delwin( menu_win );
 	erase();
